@@ -7,6 +7,7 @@ body {
     font-family: Monospace;
     margin: 0px;
     overflow: hidden;
+    background-color: black;
 }
 
 #info {
@@ -20,8 +21,9 @@ h1 {
     text-align: center;
     color: cornsilk;
     font-size: 300%;
-    background-color: #23445D;
+    background-color: #3e3e3e;
     width: 100%;
-    padding: 10px 5px;
+    padding: 5px 5px;
     margin-top: auto;
+    background-image: linear-gradient(to right, #000000, #000000, #232222, #555555, #232222, #000000, #000000);
 }

@@ -1,4 +1,5 @@
-
+import * as THREE from 'three'
+import {OrbitControls} from 'OrbitControls'
 
 export default class SceneManager {
     constructor(canvas) {
@@ -12,7 +13,7 @@ export default class SceneManager {
         for(const object of animatedObjects) {
             object.update();
         }
-        renderer.render(scene, camera);
+        this.renderer.render(this.scene, this.camera);
     }
 
     onWindowResize() {
@@ -46,6 +47,6 @@ export default class SceneManager {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
         document.body.appendChild(this.renderer.domElement);
-        this.controls = new THREE.OrbitControls(this.camera,this.renderer.domElement);
+        this.controls = new OrbitControls(this.camera,this.renderer.domElement);
     }
 }

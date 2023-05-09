@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'OrbitControls'
+import {MTLLoader} from 'MTLLoader'
+import {OBJLoader} from 'OBJLoader'
 
 export default class SceneManager {
     constructor(canvas) {
@@ -7,6 +9,8 @@ export default class SceneManager {
         this._buildScene();
         this._buildCamera();
         this._buildRenderer();
+        this._addShapes();
+        
     }
 
     update() {
@@ -48,5 +52,65 @@ export default class SceneManager {
     
         document.body.appendChild(this.renderer.domElement);
         this.controls = new OrbitControls(this.camera,this.renderer.domElement);
+    }
+
+    
+
+    _createObj(){
+        this.mtlLoader = new MTLLoader();
+        this.mtlLoader.setResourcePath("models/");
+        this.mtlLoader.setPath("models/");
+        
+        this.mtlLoader.load("Canon_AT-1.mtl",function(materials){
+            materials.preload();
+            this.objLoader = new OBJLoader();
+            this.objLoader.setPath("models/");
+            this.objLoader.setMaterials(materials);
+            this._loadTexture(this.objLoader,"Canon_AT-1.obj");
+        });
+    }
+
+    _loadTexture(loader,object){
+        loader.load(object,function(mesh){
+            var center;
+            var size;
+            mesh.traverse(function(child){
+                if(child instanceof THREE.Mesh){
+                    var mygeometry = new THREE.Geometry().fromBufferGeometry(child.geometry);
+                    mygeometry.computeBoundingBox();
+                    child.material.color = new THREE.Color(1,1,1);
+                    center = mygeometry.boundingBox.getCenter();
+                    size = mygeometry.boundingBox.getSize();
+                }
+            });
+            scene.add(mesh);
+            var sca = new THREE.Matrix4();
+            var tra = new THREE.Matrix4();
+            var combined = new THREE.Matrix4();
+            sca.makeScale(10/size.length(), 10/size.length(),10/size.length());
+            tra.makeTranslation(-center.x, -center.y, -center.z);
+            combined.multiply(sca);
+            combined.multiply(tra);
+            mesh.applyMatrix(combined);
+        });
+    }
+
+    
+
+
+
+    _addLight() {
+        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 0.5);
+        this.cameralight.castShadow = true;
+        this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 0.2);
+        this.camera.add(this.cameralight);
+    }
+
+//Add all shapes to the scene
+    _addShapes() {
+        this._createObj();
+        this._addLight();
+        this.scene.add(this.camera);
+        this.scene.add(this.ambientlight);
     }
 }

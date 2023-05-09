@@ -77,6 +77,7 @@ export default class SceneManager {
             mesh.traverse(function(child){
                 if(child instanceof THREE.Mesh){
                     console.log(child.geometry);
+                    console.log(child.geometry.position);
                     var mygeometry = new THREE.BufferGeometry(child.geometry);
                     mygeometry.computeBoundingBox();
                     child.material.color = new THREE.Color(1,1,1);

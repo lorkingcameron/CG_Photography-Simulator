@@ -61,7 +61,7 @@ export default class SceneManager {
         this.mtlLoader.setResourcePath("models/");
         this.mtlLoader.setPath("models/");
         
-        this.mtlLoader.load("Canon_AT-1.mtl",function(materials){
+        this.mtlLoader.load("Canon_AT-1.mtl", (materials) => {
             materials.preload();
             this.objLoader = new OBJLoader();
             this.objLoader.setPath("models/");
@@ -76,7 +76,8 @@ export default class SceneManager {
             var size;
             mesh.traverse(function(child){
                 if(child instanceof THREE.Mesh){
-                    var mygeometry = new THREE.Geometry().fromBufferGeometry(child.geometry);
+                    console.log(child.geometry);
+                    var mygeometry = new THREE.BufferGeometry(child.geometry);
                     mygeometry.computeBoundingBox();
                     child.material.color = new THREE.Color(1,1,1);
                     center = mygeometry.boundingBox.getCenter();
@@ -84,8 +85,8 @@ export default class SceneManager {
                 }
             });
             scene.add(mesh);
-            var sca = new THREE.Matrix4();
-            var tra = new THREE.Matrix4();
+            var sca = new Matrix4();
+            var tra = new Matrix4();
             var combined = new THREE.Matrix4();
             sca.makeScale(10/size.length(), 10/size.length(),10/size.length());
             tra.makeTranslation(-center.x, -center.y, -center.z);

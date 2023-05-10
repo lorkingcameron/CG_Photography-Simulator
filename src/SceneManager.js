@@ -56,6 +56,33 @@ export default class SceneManager {
 
     
 
+
+    _loadTexture(loader,object){
+        loader.load(object, (mesh) => {
+            this.center;
+            this.size;
+            console.log(mesh.child);
+            mesh.traverse((child) => {
+                if(child instanceof THREE.Mesh){
+                    this.mygeometry = new THREE.BufferGeometry(child.geometry);
+                    this.mygeometry.computeBoundingBox();
+                    child.material.color = new THREE.Color(1,1,1);
+                    this.center = this.mygeometry.boundingBox.getCenter();
+                    this.size = this.mygeometry.boundingBox.getSize();
+                }
+            });
+            this.scene.add(mesh);
+            this.sca = new Matrix4();
+            this.tra = new Matrix4();
+            this.combined = new THREE.Matrix4();
+            this.sca.makeScale(10/this.size.length(), 10/this.size.length(),10/this.size.length());
+            this.tra.makeTranslation(-this.center.x, -this.center.y, -this.center.z);
+            this.combined.multiply(this.sca);
+            this.combined.multiply(this.tra);
+            mesh.applyMatrix(this.combined);
+        });
+    }
+
     _createObj(){
         this.mtlLoader = new MTLLoader();
         this.mtlLoader.setResourcePath("models/");
@@ -63,37 +90,11 @@ export default class SceneManager {
         
         this.mtlLoader.load("Canon_AT-1.mtl", (materials) => {
             materials.preload();
+            console.log(materials);
             this.objLoader = new OBJLoader();
             this.objLoader.setPath("models/");
             this.objLoader.setMaterials(materials);
             this._loadTexture(this.objLoader,"Canon_AT-1.obj");
-        });
-    }
-
-    _loadTexture(loader,object){
-        loader.load(object,function(mesh){
-            var center;
-            var size;
-            mesh.traverse(function(child){
-                if(child instanceof THREE.Mesh){
-                    console.log(child.geometry);
-                    console.log(child.geometry.position);
-                    var mygeometry = new THREE.BufferGeometry(child.geometry);
-                    mygeometry.computeBoundingBox();
-                    child.material.color = new THREE.Color(1,1,1);
-                    center = mygeometry.boundingBox.getCenter();
-                    size = mygeometry.boundingBox.getSize();
-                }
-            });
-            scene.add(mesh);
-            var sca = new Matrix4();
-            var tra = new Matrix4();
-            var combined = new THREE.Matrix4();
-            sca.makeScale(10/size.length(), 10/size.length(),10/size.length());
-            tra.makeTranslation(-center.x, -center.y, -center.z);
-            combined.multiply(sca);
-            combined.multiply(tra);
-            mesh.applyMatrix(combined);
         });
     }
 

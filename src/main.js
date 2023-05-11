@@ -1,4 +1,4 @@
-import SceneManager from "./sceneManager.js";
+import SceneManager from "./modules/SceneManager.js";
 
 const canvas = document.getElementById('canvas');
 const sceneManager = new SceneManager(canvas);

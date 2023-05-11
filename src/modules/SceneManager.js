@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import {OrbitControls} from 'OrbitControls'
 import {MTLLoader} from 'three/addons/loaders/MTLLoader.js'
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js'
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
 
 export default class SceneManager {
     constructor() {
@@ -46,27 +47,18 @@ export default class SceneManager {
     }
 
     _createObj(){
-        const mtlLoader = new MTLLoader();
-        const objLoader = new OBJLoader();
-        
-        mtlLoader.load('../../models/Librarian.obj.mtl', (mtl) => {
-            mtl.preload();
-            console.log(mtl);
-            objLoader.setPath("models/");
-            objLoader.setMaterials(mtl);
-            objLoader.load('../../models/Librarian.obj', (obj) => {
-                console.log(obj);
-                this.objGeo = obj.children[0].geometry;
-                this.objMat = obj.children[0].material;
-                this.objMesh = new THREE.Mesh(this.objGeo, this.objMat);
-                this.objMesh.castShadow = true;
-                this.objMesh.receiveShadow = false;
-                this.objMesh.position.x = 0;
-                this.objMesh.position.y = 0;
-                this.objMesh.position.z = 0;
-                this.scene.add(this.objMesh);
+        const gltfLoader = new GLTFLoader();
+
+        gltfLoader.load("../../models/canon_at-1.glb", (file)=>{
+            this.scene.add(file.scene);
+            file.scene.scale.set(100,100,100)
+            file.scene.children.forEach(child=> {
+                child.castShadow = true;
+                child.receiveShadow = true;
             });
-        });
+        })
+
+
     }
 
     _addCube(w, h, d, r, g, b) {
@@ -80,7 +72,7 @@ export default class SceneManager {
 
 
     _addLight() {
-        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 0.5);
+        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 10);
         this.cameralight.castShadow = true;
         this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 0.5);
         this.camera.add(this.cameralight);

@@ -1,17 +1,14 @@
 import SceneManager from "./modules/SceneManager.js";
 
-const canvas = document.getElementById('canvas');
-const sceneManager = new SceneManager(canvas);
+const sceneManager = new SceneManager();
 window.animatedObjects = [];
 
+sceneManager.render();
+
 bindEventListeners();
-render();
 
 function bindEventListeners() {
-    window.addEventListener('resize',sceneManager.onWindowResize);
-}
-
-function render() {
-    requestAnimationFrame(render);
-    sceneManager.update();
+    window.addEventListener('resize', () => {
+        sceneManager.onWindowResize();
+      }, false);
 }

@@ -4,29 +4,17 @@ import {MTLLoader} from 'three/addons/loaders/MTLLoader.js'
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js'
 
 export default class SceneManager {
-    constructor(canvas) {
-        this.canvas = canvas;
+    constructor() {
         this._buildScene();
         this._buildCamera();
         this._buildRenderer();
         this._addShapes();
-        
-    }
-
-    update() {
-        for(const object of animatedObjects) {
-            object.update();
-        }
-        this.renderer.render(this.scene, this.camera);
     }
 
     onWindowResize() {
-        const { width, height } = canvas;
-        screenDimensions.width = width;
-        screenDimensions.height = height;
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     _buildScene() {
@@ -50,7 +38,8 @@ export default class SceneManager {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
-        document.body.appendChild(this.renderer.domElement);
+        const target = document.getElementById('target');
+        target.appendChild(this.renderer.domElement);
         this.controls = new OrbitControls(this.camera,this.renderer.domElement);
         this.controls.target.set(0, 0, 0);
         this.controls.update();
@@ -59,8 +48,6 @@ export default class SceneManager {
     _createObj(){
         const mtlLoader = new MTLLoader();
         const objLoader = new OBJLoader();
-        // this.mtlLoader.setResourcePath("models/");
-        // this.mtlLoader.setPath("models/");
         
         mtlLoader.load('../../models/Librarian.obj.mtl', (mtl) => {
             mtl.preload();
@@ -68,6 +55,7 @@ export default class SceneManager {
             objLoader.setPath("models/");
             objLoader.setMaterials(mtl);
             objLoader.load('../../models/Librarian.obj', (obj) => {
+                console.log(obj);
                 this.objGeo = obj.children[0].geometry;
                 this.objMat = obj.children[0].material;
                 this.objMesh = new THREE.Mesh(this.objGeo, this.objMat);
@@ -105,5 +93,19 @@ export default class SceneManager {
         this._addLight();
         this.scene.add(this.camera);
         this.scene.add(this.ambientlight);
+    }
+
+    _tick() {
+        for(const object of animatedObjects) {
+            object.tick();
+        }
+    }
+    
+    render() {
+        this._tick();
+        
+        requestAnimationFrame(this.render.bind(this));
+        this.renderer.render(this.scene, this.camera);
+        this.controls.update();
     }
 }

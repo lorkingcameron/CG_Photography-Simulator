@@ -56,35 +56,28 @@ export default class SceneManager {
         this.controls.update();
     }
 
-    
-
-
-    _loadTexture(loader,object){
-        loader.load(object, (obj) => {
-            this.objGeo = obj.children[0].geometry;
-            this.ojbMat = obj.children[0].material;
-            this.objMesh = new THREE.Mesh(this.objGeo, this.ojbMat);
-            this.objMesh.castShadow = true;
-            this.objMesh.receiveShadow = true;
-            this.objMesh.position.x = 0;
-            this.objMesh.position.y = 0;
-            this.objMesh.position.z = 0;
-            this.scene.add(this.objMesh);
-        });
-    }
-
     _createObj(){
-        this.mtlLoader = new MTLLoader();
+        const mtlLoader = new MTLLoader();
+        const objLoader = new OBJLoader();
         // this.mtlLoader.setResourcePath("models/");
         // this.mtlLoader.setPath("models/");
         
-        this.mtlLoader.load('../../models/Librarian.obj.mtl', (mtl) => {
-            materials.preload();
-            console.log(materials);
-            this.objLoader = new OBJLoader();
-            this.objLoader.setPath("models/");
-            this.objLoader.setMaterials(materials);
-            this._loadTexture(this.objLoader,"../../models/Librarian.obj");
+        mtlLoader.load('../../models/Librarian.obj.mtl', (mtl) => {
+            mtl.preload();
+            console.log(mtl);
+            objLoader.setPath("models/");
+            objLoader.setMaterials(mtl);
+            objLoader.load('../../models/Librarian.obj', (obj) => {
+                this.objGeo = obj.children[0].geometry;
+                this.objMat = obj.children[0].material;
+                this.objMesh = new THREE.Mesh(this.objGeo, this.objMat);
+                this.objMesh.castShadow = true;
+                this.objMesh.receiveShadow = false;
+                this.objMesh.position.x = 0;
+                this.objMesh.position.y = 0;
+                this.objMesh.position.z = 0;
+                this.scene.add(this.objMesh);
+            });
         });
     }
 

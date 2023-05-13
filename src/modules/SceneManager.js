@@ -1,8 +1,7 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'OrbitControls'
-import {MTLLoader} from 'three/addons/loaders/MTLLoader.js'
-import {OBJLoader} from 'three/addons/loaders/OBJLoader.js'
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
+import {TextureLoader} from 'TextureLoader'
 
 export default class SceneManager {
     constructor() {
@@ -26,6 +25,7 @@ export default class SceneManager {
     _buildCamera() {
         var ratio = window.innerWidth/window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.camera.filmGauge =100.0;
         this.camera.position.set(40,15,15);
         this.camera.lookAt(0,0,5);
     
@@ -48,13 +48,19 @@ export default class SceneManager {
 
     _createObj(){
         const gltfLoader = new GLTFLoader();
+        const textureLoader = new TextureLoader();
 
-        gltfLoader.load("../../models/canon_at-1.glb", (file)=>{
+        gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
+        // gltfLoader.load("../../models/scene.gltf", (file)=>{
             this.scene.add(file.scene);
-            file.scene.scale.set(100,100,100)
+            file.scene.scale.set(100,100,100);
+            console.log(file.scene)
             file.scene.children.forEach(child=> {
                 child.castShadow = true;
                 child.receiveShadow = true;
+                if(child.name === ""){
+
+                }
             });
         })
 

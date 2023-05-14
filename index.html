@@ -10,7 +10,11 @@
             {
                 "imports": {
                     "three": "./node_modules/three/build/three.module.js",
-                    "OrbitControls": "./node_modules/three/examples/jsm/controls/OrbitControls.js"
+                    "three/addons/": "./node_modules/three/examples/jsm/",
+                    "OrbitControls": "./node_modules/three/examples/jsm/controls/OrbitControls.js",
+                    "MTLLoader": "./node_modules/three/examples/jsm/loaders/MTLLoader.js",
+                    "OBJLoader": "./node_modules/three/examples/jsm/loaders/OBJLoader.js",
+                    "TextureLoader": "./node_modules/three/src/loaders/TextureLoader.js"
                 }
             }
         </script>
@@ -21,6 +25,7 @@
         <div id="info">
             <H1>Photography Simulator</H1>
         </div>
+        <div id="target"></canvas>
 
         <script type="module" src="src/main.js"></script>
 

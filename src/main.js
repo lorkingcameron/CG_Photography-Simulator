@@ -1,5 +1,6 @@
 import SceneManager from "./modules/SceneManager.js";
 
+
 const sceneManager = new SceneManager();
 window.animatedObjects = [];
 
@@ -12,3 +13,5 @@ function bindEventListeners() {
         sceneManager.onWindowResize();
       }, false);
 }
+
+

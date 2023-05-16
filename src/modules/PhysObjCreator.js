@@ -1,7 +1,7 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
 
-export default class PhysicsObjCreator {
+export default class PhysObjCreator {
     constructor(scene, world, physicsBodies) {
         this.scene = scene;
         this.world = world;

@@ -3,7 +3,7 @@ import {OrbitControls} from 'OrbitControls'
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
 import {TextureLoader} from 'TextureLoader'
 import Physics from '../utils/Physics.js'
-import PhysicsObjCreator from '../utils/physicsObjCreator.js'
+import PhysObjCreator from './PhysObjCreator.js'
 import Lighting from '../utils/Lighting.js'
 // import { createNoise2D } from 'simplex-noise'
 
@@ -133,7 +133,7 @@ export default class SceneManager {
         // this._addPlane(60, 10, white, 0, 0, 0);
         this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
 
-        const physObjCreator = new PhysicsObjCreator(this.scene, this.physics.world, this.physics.physicsBodies);
+        const physObjCreator = new PhysObjCreator(this.scene, this.physics.world, this.physics.physicsBodies);
         physObjCreator._createCube();
         physObjCreator._createSphere();
     }

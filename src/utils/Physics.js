@@ -8,7 +8,7 @@ export default class Physics {
         this._buildDebugger(scene);
     }
 
-    updatePhysicsBodies(){
+    updatePhysics(){
         for (var i = 0; i < this.physicsBodies.length; i++) {
             let body = this.physicsBodies[i][0];
             let mesh = this.physicsBodies[i][1];
@@ -17,9 +17,6 @@ export default class Physics {
             mesh.quaternion.copy(body.quaternion);
         }
 
-    }
-
-    tick() {
         this.world.fixedStep();
         this.CannonDebugger.update();
     }

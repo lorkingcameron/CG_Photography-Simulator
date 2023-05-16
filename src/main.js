@@ -9,7 +9,7 @@ bindEventListeners();
 
 function bindEventListeners() {
     window.addEventListener('resize', () => {
-        sceneManager.onWindowResize();
+        sceneManager.graphics.onWindowResize();
       }, false);
 }
 

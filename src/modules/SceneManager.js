@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import {OrbitControls} from 'OrbitControls'
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
 import {TextureLoader} from 'TextureLoader'
+import Graphics from '../utils/Graphics.js'
 import Physics from '../utils/Physics.js'
 import PhysObjCreator from './PhysObjCreator.js'
 import Lighting from '../utils/Lighting.js'
@@ -9,53 +9,13 @@ import Lighting from '../utils/Lighting.js'
 
 export default class SceneManager {
     constructor() {
-        this._buildScene();
-        this._buildCamera();
-        this._buildRenderer();
+        this.graphics = new Graphics();
 
-        this.physics = new Physics(this.scene);
-        animatedObjects.push(this.physics);
+        this.physics = new Physics(this.graphics.scene);
 
-        this.lights = new Lighting(this.scene);
+        this.lights = new Lighting(this.graphics.scene, this.graphics.camera);
 
         this._addObjects();
-    }
-
-    onWindowResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    _buildScene() {
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color( 0x000000 );
-        const axesIndicator = new THREE.AxesHelper(15);
-        this.scene.add(axesIndicator);
-    }
-
-    _buildCamera() {
-        var ratio = window.innerWidth/window.innerHeight;
-        this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
-        this.camera.filmGauge = 100.0;
-        this.camera.position.set(0, 5, 15);
-        this.camera.lookAt(0,0,5);
-    
-        this.scene.add(this.camera);
-    }
-
-    _buildRenderer() {
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
-        this.renderer.setSize(window.innerWidth,window.innerHeight);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    
-        const target = document.getElementById('target');
-        target.appendChild(this.renderer.domElement);
-        this.controls = new OrbitControls(this.camera,this.renderer.domElement);
-        this.controls.target.set(0, 0, 0);
-        this.controls.update();
     }
 
     _createObj(){
@@ -64,19 +24,16 @@ export default class SceneManager {
 
         gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
         // gltfLoader.load("../../models/scene.gltf", (file)=>{
-            this.scene.add(file.scene);
+            this.graphics.scene.add(file.scene);
             file.scene.scale.set(100,100,100);
-            console.log(file.scene)
             file.scene.children.forEach(child=> {
-                child.castShadow = true;
+                //child.castShadow = true;
                 child.receiveShadow = true;
                 if(child.name === ""){
 
                 }
             });
         })
-
-
     }
 
     _addCube(size, colour, x, y, z) {
@@ -85,8 +42,8 @@ export default class SceneManager {
         material.wireframe = true;
         var geometry_cube = new THREE.BoxGeometry(size, size, size);
         var cube = new THREE.Mesh(geometry_cube, material);
-        this.scene.add(cube);
         cube.position.set(x,y,z);
+        this.graphics.scene.add(cube);
     }
 
     _addMappedPlane(size, detail, amp, colour, x, y, z) {
@@ -102,7 +59,7 @@ export default class SceneManager {
           });
         var plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
         
-        this.scene.add(plane_mesh);
+        this.graphics.scene.add(plane_mesh);
         plane_mesh.position.set(x,y,z);
         plane_mesh.rotateX(-Math.PI/2);
     }
@@ -114,19 +71,20 @@ export default class SceneManager {
         let blue = new THREE.Color(0x0000ff);
         let white = new THREE.Color(0xffffff);
 
-        // this._createObj();
+        this._createObj();
+        
         // this._addCube(10, blue, 0, 0, 0);
         // this._addCube(4, blue, 0, 0, 0);
-        this._addCube(10, green, 35, 0, 0);
-        this._addCube(10, green, -35, 0, 0);
-        this._addCube(10, red, 0, 35, 0);
-        this._addCube(10, red, 0, -35, 0);
+        // this._addCube(10, green, 35, 0, 0);
+        // this._addCube(10, green, -35, 0, 0);
+        // this._addCube(10, red, 0, 35, 0);
+        // this._addCube(10, red, 0, -35, 0);
 
-        this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
+        // this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
 
-        const physObjCreator = new PhysObjCreator(this.scene, this.physics.world, this.physics.physicsBodies);
-        physObjCreator._createCube();
-        physObjCreator._createSphere();
+        const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
+        // physObjCreator._createCube();
+        // physObjCreator._createSphere();
     }
 
     _tick() {
@@ -135,15 +93,10 @@ export default class SceneManager {
         }
     }
 
-    
-    
     render() {
         this._tick();
-        
-        this.physics.updatePhysicsBodies();
-
+        this.physics.updatePhysics();
+        this.graphics.render();
         requestAnimationFrame(this.render.bind(this));
-        this.renderer.render(this.scene, this.camera);
-        this.controls.update();
     }
 }

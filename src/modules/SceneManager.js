@@ -135,21 +135,12 @@ export default class SceneManager {
         }
     }
 
-    _updatePhysicsBodies(){
-        for (var i = 0; i < this.physics.physicsBodies.length; i++) {
-            let body = this.physics.physicsBodies[i][0];
-            let mesh = this.physics.physicsBodies[i][1];
-
-            mesh.position.copy(body.position);
-            mesh.quaternion.copy(body.quaternion);
-        }
-
-    }
+    
     
     render() {
         this._tick();
         
-        this._updatePhysicsBodies();
+        this.physics.updatePhysicsBodies();
 
         requestAnimationFrame(this.render.bind(this));
         this.renderer.render(this.scene, this.camera);

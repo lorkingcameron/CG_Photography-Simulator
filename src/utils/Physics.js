@@ -8,6 +8,17 @@ export default class Physics {
         this._buildDebugger(scene);
     }
 
+    updatePhysicsBodies(){
+        for (var i = 0; i < this.physicsBodies.length; i++) {
+            let body = this.physicsBodies[i][0];
+            let mesh = this.physicsBodies[i][1];
+
+            mesh.position.copy(body.position);
+            mesh.quaternion.copy(body.quaternion);
+        }
+
+    }
+
     tick() {
         this.world.fixedStep();
         this.CannonDebugger.update();

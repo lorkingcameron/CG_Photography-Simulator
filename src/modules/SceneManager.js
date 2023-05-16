@@ -1,20 +1,24 @@
 import * as THREE from 'three'
-import * as CANNON from 'cannon-es'
-import CannonDebugger from 'cannon-es-debugger'
 import {OrbitControls} from 'OrbitControls'
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
 import {TextureLoader} from 'TextureLoader'
+import Physics from '../utils/Physics.js'
+import PhysicsObjCreator from '../utils/physicsObjCreator.js'
+import Lighting from '../utils/Lighting.js'
 // import { createNoise2D } from 'simplex-noise'
 
 export default class SceneManager {
     constructor() {
         this._buildScene();
-        this._buildPhysics();
-        this._buildDebugger();
         this._buildCamera();
         this._buildRenderer();
-        this._addShapes();
-        this._addLight();
+
+        this.physics = new Physics(this.scene);
+        animatedObjects.push(this.physics);
+
+        this.lights = new Lighting(this.scene);
+
+        this._addObjects();
     }
 
     onWindowResize() {
@@ -26,60 +30,6 @@ export default class SceneManager {
     _buildScene() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x000000 );
-    }
-
-    _buildPhysics() {
-        this.physicsBodies = [];
-
-        console.log(CANNON.World);
-        var world = new CANNON.World({
-            gravity: new CANNON.Vec3(0, -10, 0) // m/s²
-        });
-        this.world = world;
-
-        //create 'ground' plane
-        const groundBody = new CANNON.Body({
-            type: CANNON.Body.STATIC,
-            shape: new CANNON.Plane(),
-        });
-        groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-        groundBody.position.set(0, 0, 0);
-        this.world.addBody(groundBody);
-
-        //create basic sphere
-        const sphereBody = new CANNON.Body({
-            mass: 5,
-            shape: new CANNON.Sphere(1),
-        });
-        sphereBody.position.set(0, 7, 0);
-        this.world.addBody(sphereBody);
-
-        const sphereGeometry = new THREE.SphereGeometry();
-        const sphereMaterial = new THREE.MeshNormalMaterial();
-        const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        this.scene.add(sphereMesh);
-        this.physicsBodies.push([sphereBody, sphereMesh]);
-
-        //create basic cube
-        const boxBody = new CANNON.Body({
-            mass: 5,
-            shape: new CANNON.Box(new CANNON.Vec3(1,1,1)),
-        });
-        boxBody.position.set(1, 12, 0);
-        this.world.addBody(boxBody);
-
-        const boxGeometry = new THREE.BoxGeometry(2,2,2);
-        const boxMaterial = new THREE.MeshNormalMaterial();
-        const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
-        this.scene.add(boxMesh);
-        this.physicsBodies.push([boxBody, boxMesh]);
-        
-    }
-
-    _buildDebugger() {
-        this.CannonDebugger = new CannonDebugger(this.scene, this.world, {
-            color: new THREE.Color(0xffffff), // Debugger wireframe colour
-        });
     }
 
     _buildCamera() {
@@ -127,15 +77,6 @@ export default class SceneManager {
 
     }
 
-    _addCube(w, h, d, r, g, b) {
-        var material = new THREE.MeshBasicMaterial();
-        material.color = new THREE.Color(r, g, b);
-        material.wireframe = true;
-        var geometry_cube = new THREE.BoxGeometry(w, h, d);
-        var cube = new THREE.Mesh(geometry_cube, material);
-        this.scene.add(cube);
-    }
-
     _addBetterCube(size, colour, x, y, z) {
         var material = new THREE.MeshBasicMaterial();
         material.color = new THREE.Color(colour);
@@ -174,29 +115,8 @@ export default class SceneManager {
         plane_mesh.rotateX(-Math.PI/2);
     }
 
-    
-
-
-    _addLight() {
-        // this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 10);
-        // this.cameralight.castShadow = true;
-        // this.camera.add(this.cameralight);
-
-        this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 0.05);
-        this.scene.add(this.ambientlight);
-
-        const light = new THREE.PointLight( new THREE.Color("#FFCB8E"), 1, 600);
-        light.position.set(10, 30, 10);
-        light.castShadow = true;
-        light.shadow.mapSize.width = 512;
-        light.shadow.mapSize.height = 512;
-        light.shadow.camera.near = 0.5;
-        light.shadow.camera.far = 500;
-        this.scene.add(light);
-    }
-
     //Add all shapes to the scene
-    _addShapes() {
+    _addObjects() {
         let red = new THREE.Color(0xff3333);
         let green = new THREE.Color(0x33ff33);
         let blue = new THREE.Color(0x0000ff);
@@ -212,6 +132,10 @@ export default class SceneManager {
 
         // this._addPlane(60, 10, white, 0, 0, 0);
         this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
+
+        const physObjCreator = new PhysicsObjCreator(this.scene, this.physics.world, this.physics.physicsBodies);
+        physObjCreator._createCube();
+        physObjCreator._createSphere();
     }
 
     _tick() {
@@ -219,25 +143,10 @@ export default class SceneManager {
             object.tick();
         }
     }
-
-    _updatePhysicsBodies(){
-        for (var i = 0; i < this.physicsBodies.length; i++) {
-            let body = this.physicsBodies[i][0];
-            let mesh = this.physicsBodies[i][1];
-
-            mesh.position.copy(body.position);
-            mesh.quaternion.copy(body.quaternion);
-        }
-
-    }
     
     render() {
         this._tick();
-        
-        this.world.fixedStep();
-        this._updatePhysicsBodies();
-        this.CannonDebugger.update();
-
+    
         requestAnimationFrame(this.render.bind(this));
         this.renderer.render(this.scene, this.camera);
         this.controls.update();

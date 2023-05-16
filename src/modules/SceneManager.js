@@ -77,7 +77,7 @@ export default class SceneManager {
 
     }
 
-    _addBetterCube(size, colour, x, y, z) {
+    _addCube(size, colour, x, y, z) {
         var material = new THREE.MeshBasicMaterial();
         material.color = new THREE.Color(colour);
         material.wireframe = true;
@@ -85,16 +85,6 @@ export default class SceneManager {
         var cube = new THREE.Mesh(geometry_cube, material);
         this.scene.add(cube);
         cube.position.set(x,y,z);
-    }
-
-    _addPlane(size, detail, colour, x, y, z) {
-        var plane_geometry = new THREE.PlaneGeometry(size, size, detail, detail);
-        var plane_material = new THREE.MeshBasicMaterial({ wireframe: true, color: colour });
-        var plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
-        
-        this.scene.add(plane_mesh);
-        plane_mesh.position.set(x,y,z);
-        plane_mesh.rotateX(Math.PI/2);
     }
 
     _addMappedPlane(size, detail, amp, colour, x, y, z) {
@@ -123,14 +113,13 @@ export default class SceneManager {
         let white = new THREE.Color(0xffffff);
 
         // this._createObj();
-        // this._addBetterCube(10, blue, 0, 0, 0);
-        // this._addBetterCube(4, blue, 0, 0, 0);
-        this._addBetterCube(10, green, 35, 0, 0);
-        this._addBetterCube(10, green, -35, 0, 0);
-        this._addBetterCube(10, red, 0, 35, 0);
-        this._addBetterCube(10, red, 0, -35, 0);
+        // this._addCube(10, blue, 0, 0, 0);
+        // this._addCube(4, blue, 0, 0, 0);
+        this._addCube(10, green, 35, 0, 0);
+        this._addCube(10, green, -35, 0, 0);
+        this._addCube(10, red, 0, 35, 0);
+        this._addCube(10, red, 0, -35, 0);
 
-        // this._addPlane(60, 10, white, 0, 0, 0);
         this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
 
         const physObjCreator = new PhysObjCreator(this.scene, this.physics.world, this.physics.physicsBodies);
@@ -143,10 +132,23 @@ export default class SceneManager {
             object.tick();
         }
     }
+
+    _updatePhysicsBodies(){
+        for (var i = 0; i < this.physics.physicsBodies.length; i++) {
+            let body = this.physics.physicsBodies[i][0];
+            let mesh = this.physics.physicsBodies[i][1];
+
+            mesh.position.copy(body.position);
+            mesh.quaternion.copy(body.quaternion);
+        }
+
+    }
     
     render() {
         this._tick();
-    
+        
+        this._updatePhysicsBodies();
+
         requestAnimationFrame(this.render.bind(this));
         this.renderer.render(this.scene, this.camera);
         this.controls.update();

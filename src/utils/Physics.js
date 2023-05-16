@@ -9,13 +9,6 @@ export default class Physics {
     }
 
     tick() {
-        for (var i = 0; i < this.physicsBodies.length; i++) {
-            let body = this.physicsBodies[i][0];
-            let mesh = this.physicsBodies[i][1];
-
-            mesh.position.copy(body.position);
-            mesh.quaternion.copy(body.quaternion);
-        }
         this.world.fixedStep();
         this.CannonDebugger.update();
     }
@@ -39,7 +32,6 @@ export default class Physics {
     }
 
     _createGroundPlane() {
-        //create 'ground' plane
         const groundBody = new CANNON.Body({
             type: CANNON.Body.STATIC,
             shape: new CANNON.Plane(),

@@ -1,7 +1,7 @@
-import SceneManager from "./modules/SceneManager.js";
+import SceneManager from "./modules/SceneManager.js"
 
-const sceneManager = new SceneManager();
 window.animatedObjects = [];
+const sceneManager = new SceneManager();
 
 sceneManager.render();
 
@@ -9,6 +9,8 @@ bindEventListeners();
 
 function bindEventListeners() {
     window.addEventListener('resize', () => {
-        sceneManager.onWindowResize();
+        sceneManager.graphics.onWindowResize();
       }, false);
 }
+
+

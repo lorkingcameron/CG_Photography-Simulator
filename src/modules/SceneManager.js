@@ -2,18 +2,20 @@ import * as THREE from 'three'
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
 import {TextureLoader} from 'TextureLoader'
 import Graphics from '../utils/Graphics.js'
+import Physics from '../utils/Physics.js'
+import PhysObjCreator from './PhysObjCreator.js'
+import Lighting from '../utils/Lighting.js'
+// import { createNoise2D } from 'simplex-noise'
 
 export default class SceneManager {
     constructor() {
         this.graphics = new Graphics();
 
-        this._addShapes();
-    }
+        this.physics = new Physics(this.graphics.scene);
 
-    onWindowResize() {
-        this.graphics.camera.aspect = window.innerWidth / window.innerHeight;
-        this.graphics.camera.updateProjectionMatrix();
-        this.graphics.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.lights = new Lighting(this.graphics.scene, this.graphics.camera);
+
+        this._addObjects();
     }
 
     _createObj(){
@@ -34,29 +36,55 @@ export default class SceneManager {
         })
     }
 
-    _addCube(w, h, d, r, g, b) {
+    _addCube(size, colour, x, y, z) {
         var material = new THREE.MeshBasicMaterial();
-        material.color = new THREE.Color(r, g, b);
+        material.color = new THREE.Color(colour);
         material.wireframe = true;
-        var geometry_cube = new THREE.BoxGeometry(w, h, d);
+        var geometry_cube = new THREE.BoxGeometry(size, size, size);
         var cube = new THREE.Mesh(geometry_cube, material);
+        cube.position.set(x,y,z);
         this.graphics.scene.add(cube);
     }
 
+    _addMappedPlane(size, detail, amp, colour, x, y, z) {
+        const textureLoader = new THREE.TextureLoader();
+        const displacementMapTexture = textureLoader.load('src/assets/noise2.png');
 
-    _addLight() {
-        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 20);
-        this.cameralight.castShadow = true;
-        this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 10);
-        this.graphics.camera.add(this.cameralight);
-    }    
+        var plane_geometry = new THREE.PlaneGeometry(size, size, detail, detail);
+        var plane_material = new THREE.MeshStandardMaterial({
+            wireframe: true,
+            color: colour,
+            displacementMap: displacementMapTexture,
+            displacementScale: amp, // Adjust the scale as needed
+          });
+        var plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
+        
+        this.graphics.scene.add(plane_mesh);
+        plane_mesh.position.set(x,y,z);
+        plane_mesh.rotateX(-Math.PI/2);
+    }
 
     //Add all shapes to the scene
-    _addShapes() {
+    _addObjects() {
+        let red = new THREE.Color(0xff3333);
+        let green = new THREE.Color(0x33ff33);
+        let blue = new THREE.Color(0x0000ff);
+        let white = new THREE.Color(0xffffff);
+
         this._createObj();
-        this._addCube(2, 2, 2, 0, 1, 0);
-        this._addLight();
-        this.graphics.scene.add(this.ambientlight);
+        
+        // this._addCube(10, blue, 0, 0, 0);
+        // this._addCube(4, blue, 0, 0, 0);
+        // this._addCube(10, green, 35, 0, 0);
+        // this._addCube(10, green, -35, 0, 0);
+        // this._addCube(10, red, 0, 35, 0);
+        // this._addCube(10, red, 0, -35, 0);
+
+        // this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
+
+        const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
+        // physObjCreator._createCube();
+        // physObjCreator._createSphere();
     }
 
     _tick() {
@@ -67,6 +95,8 @@ export default class SceneManager {
 
     render() {
         this._tick();
+        this.physics.updatePhysics();
         this.graphics.render();
+        requestAnimationFrame(this.render.bind(this));
     }
 }

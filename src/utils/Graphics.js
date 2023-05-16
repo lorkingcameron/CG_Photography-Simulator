@@ -13,6 +13,12 @@ export default class Graphics {
         this._initPostProcessing();
         this._addGUI();
     }
+    
+    onWindowResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
     _buildScene() {
         this.scene = new THREE.Scene();
@@ -76,14 +82,13 @@ export default class Graphics {
         };
 
         const gui = new GUI();
-            gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onFinishChange( () => {this._updatePost()} );
-            gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onFinishChange( () => {this._updatePost()}  );
-            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onFinishChange( () => {this._updatePost()} );
+            gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
+            gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
+            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( () => {this._updatePost()} );
             gui.close();
     }
 
     render() {
-        requestAnimationFrame(this.render.bind(this));
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
         this.postprocessing.composer.render(0.1);

@@ -29,6 +29,8 @@ export default class SceneManager {
     }
 
     _buildPhysics() {
+        this.physicsBodies = [];
+
         console.log(CANNON.World);
         var world = new CANNON.World({
             gravity: new CANNON.Vec3(0, -10, 0) // m/s²
@@ -52,6 +54,12 @@ export default class SceneManager {
         sphereBody.position.set(0, 7, 0);
         this.world.addBody(sphereBody);
 
+        const sphereGeometry = new THREE.SphereGeometry();
+        const sphereMaterial = new THREE.MeshNormalMaterial();
+        const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        this.scene.add(sphereMesh);
+        this.physicsBodies.push([sphereBody, sphereMesh]);
+
         //create basic cube
         const boxBody = new CANNON.Body({
             mass: 5,
@@ -59,14 +67,19 @@ export default class SceneManager {
         });
         boxBody.position.set(1, 12, 0);
         this.world.addBody(boxBody);
+
+        const boxGeometry = new THREE.BoxGeometry(2,2,2);
+        const boxMaterial = new THREE.MeshNormalMaterial();
+        const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+        this.scene.add(boxMesh);
+        this.physicsBodies.push([boxBody, boxMesh]);
         
     }
 
     _buildDebugger() {
         this.CannonDebugger = new CannonDebugger(this.scene, this.world, {
-
+            color: new THREE.Color(0xffffff), // Debugger wireframe colour
         });
-
     }
 
     _buildCamera() {
@@ -190,7 +203,7 @@ export default class SceneManager {
         let white = new THREE.Color(0xffffff);
 
         // this._createObj();
-        this._addBetterCube(10, blue, 0, 0, 0);
+        // this._addBetterCube(10, blue, 0, 0, 0);
         // this._addBetterCube(4, blue, 0, 0, 0);
         this._addBetterCube(10, green, 35, 0, 0);
         this._addBetterCube(10, green, -35, 0, 0);
@@ -206,12 +219,23 @@ export default class SceneManager {
             object.tick();
         }
     }
+
+    _updatePhysicsBodies(){
+        for (var i = 0; i < this.physicsBodies.length; i++) {
+            let body = this.physicsBodies[i][0];
+            let mesh = this.physicsBodies[i][1];
+
+            mesh.position.copy(body.position);
+            mesh.quaternion.copy(body.quaternion);
+        }
+
+    }
     
     render() {
         this._tick();
         
         this.world.fixedStep();
-        // this._updatePhysicsBodies();
+        this._updatePhysicsBodies();
         this.CannonDebugger.update();
 
         requestAnimationFrame(this.render.bind(this));

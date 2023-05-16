@@ -117,9 +117,7 @@ export default class SceneManager {
 
         this.postprocessing.composer = this.composer;
         this.postprocessing.bokeh = this.bokehPass;
-
-        
-
+        console.log(this.postprocessing);
     }
 
     _GUITest() {
@@ -130,21 +128,20 @@ export default class SceneManager {
             maxblur: 0.01
         };
 
-        //Problem Area
-        const matChanger = function (){
-            this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
-            this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
-            this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
-        }
-        //End Problem Area
-
         const gui = new GUI();
-            gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( matChanger );
-            gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( matChanger );
-            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( matChanger );
+            gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onFinishChange( () => {this._updatePost()} );
+            gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onFinishChange( () => {this._updatePost()}  );
+            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onFinishChange( () => {this._updatePost()} );
             gui.close();
 
         //matChanger();
+    }
+
+    _updatePost() {
+        console.log(this.effectController);
+        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
+        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
+        this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
     }
 
     

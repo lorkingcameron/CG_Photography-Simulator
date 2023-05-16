@@ -30,6 +30,8 @@ export default class SceneManager {
     _buildScene() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x000000 );
+        const axesIndicator = new THREE.AxesHelper(15);
+        this.scene.add(axesIndicator);
     }
 
     _buildCamera() {

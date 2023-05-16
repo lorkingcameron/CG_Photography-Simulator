@@ -71,20 +71,20 @@ export default class SceneManager {
         let blue = new THREE.Color(0x0000ff);
         let white = new THREE.Color(0xffffff);
 
-        this._createObj();
+        // this._createObj();
         
         // this._addCube(10, blue, 0, 0, 0);
         // this._addCube(4, blue, 0, 0, 0);
-        // this._addCube(10, green, 35, 0, 0);
-        // this._addCube(10, green, -35, 0, 0);
-        // this._addCube(10, red, 0, 35, 0);
-        // this._addCube(10, red, 0, -35, 0);
+        this._addCube(10, green, 35, 0, 0);
+        this._addCube(10, green, -35, 0, 0);
+        this._addCube(10, red, 0, 35, 0);
+        this._addCube(10, red, 0, -35, 0);
 
-        // this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
+        this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
 
         const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
-        // physObjCreator._createCube();
-        // physObjCreator._createSphere();
+        physObjCreator._createCube();
+        physObjCreator._createSphere();
     }
 
     _tick() {

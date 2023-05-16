@@ -1,6 +1,10 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'OrbitControls'
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js'
+import {BokehPass} from 'three/addons/postprocessing/BokehPass.js'
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js'
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js'
+import {GUI} from 'three/addons/libs/lil-gui.module.min.js'
 import {TextureLoader} from 'TextureLoader'
 
 export default class SceneManager {
@@ -9,6 +13,8 @@ export default class SceneManager {
         this._buildCamera();
         this._buildRenderer();
         this._addShapes();
+        this._initPostprocessing();
+        this._GUITest();
     }
 
     onWindowResize() {
@@ -20,7 +26,16 @@ export default class SceneManager {
     _buildScene() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x114444 );
+        
+
+        
+        
     }
+
+
+    
+
+    
 
     _buildCamera() {
         var ratio = window.innerWidth/window.innerHeight;
@@ -50,11 +65,10 @@ export default class SceneManager {
         const gltfLoader = new GLTFLoader();
         const textureLoader = new TextureLoader();
 
-        gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
+        gltfLoader.load("../../models/canon_at-1.glb", (file)=>{
         // gltfLoader.load("../../models/scene.gltf", (file)=>{
             this.scene.add(file.scene);
             file.scene.scale.set(100,100,100);
-            console.log(file.scene)
             file.scene.children.forEach(child=> {
                 child.castShadow = true;
                 child.receiveShadow = true;
@@ -84,6 +98,57 @@ export default class SceneManager {
         this.camera.add(this.cameralight);
     }
 
+
+
+    _initPostprocessing() {
+        this.postprocessing = {};
+        this.renderPass = new RenderPass( this.scene, this.camera );
+
+        this.bokehPass = new BokehPass( this.scene, this.camera, {
+            focus: 7.0,
+            aperture: 0.01,
+            maxblur: 0.01
+        } );
+
+        this.composer = new EffectComposer( this.renderer );
+
+        this.composer.addPass( this.renderPass );
+        this.composer.addPass( this.bokehPass );
+
+        this.postprocessing.composer = this.composer;
+        this.postprocessing.bokeh = this.bokehPass;
+
+        
+
+    }
+
+    _GUITest() {
+        this.effectController = {
+
+            focus: 500.0,
+            aperture: 5,
+            maxblur: 0.01
+        };
+
+        //Problem Area
+        const matChanger = function (){
+            this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
+            this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
+            this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
+        }
+        //End Problem Area
+
+        const gui = new GUI();
+            gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( matChanger );
+            gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( matChanger );
+            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( matChanger );
+            gui.close();
+
+        //matChanger();
+    }
+
+    
+
     //Add all shapes to the scene
     _addShapes() {
         this._createObj();
@@ -98,12 +163,14 @@ export default class SceneManager {
             object.tick();
         }
     }
+
+
     
     render() {
         this._tick();
-        
         requestAnimationFrame(this.render.bind(this));
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
+        this.postprocessing.composer.render(0.1);
     }
 }

@@ -65,12 +65,12 @@ export default class SceneManager {
         const gltfLoader = new GLTFLoader();
         const textureLoader = new TextureLoader();
 
-        gltfLoader.load("../../models/canon_at-1.glb", (file)=>{
+        gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
         // gltfLoader.load("../../models/scene.gltf", (file)=>{
             this.scene.add(file.scene);
             file.scene.scale.set(100,100,100);
             file.scene.children.forEach(child=> {
-                child.castShadow = true;
+                //child.castShadow = true;
                 child.receiveShadow = true;
                 if(child.name === ""){
 
@@ -92,9 +92,9 @@ export default class SceneManager {
 
 
     _addLight() {
-        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 10);
+        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 20);
         this.cameralight.castShadow = true;
-        this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 0.5);
+        this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 10);
         this.camera.add(this.cameralight);
     }
 
@@ -107,7 +107,7 @@ export default class SceneManager {
         this.bokehPass = new BokehPass( this.scene, this.camera, {
             focus: 7.0,
             aperture: 0.01,
-            maxblur: 0.01
+            maxblur: 0.00
         } );
 
         this.composer = new EffectComposer( this.renderer );

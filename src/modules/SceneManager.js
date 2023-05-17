@@ -22,6 +22,8 @@ export default class SceneManager {
         this.cameraModel;
 
         this.cameraGroup = new THREE.Group();
+
+        this.cameraLock;
     }
 
     _createObj(){
@@ -33,6 +35,8 @@ export default class SceneManager {
             this.cameraModel = file.scene;
             this.cameraGroup.add(this.cameraModel);
             this.graphics.scene.add(this.cameraGroup);
+            //this.graphics.camera.position.set(0,0,0);
+            this.cameraGroup.add(this.graphics.camera);
             console.log(this.cameraModel.position);
             file.scene.scale.set(10,10,10);
             file.scene.children.forEach(child=> {
@@ -145,6 +149,31 @@ export default class SceneManager {
                 console.log("J");
                 this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value-=0.0001;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
+            }
+            if  (name === "w"){
+                console.log("W");
+                this.cameraGroup.position.x+=1;
+            }
+            if  (name === "s"){
+                console.log("S");
+                this.cameraGroup.position.x-=1;
+            }
+            if  (name === "a"){
+                console.log("A");
+                this.cameraGroup.position.z+=1;
+            }
+            if  (name === "d"){
+                console.log("D");
+                this.cameraGroup.position.z-=1;
+            }
+            if (name === "e"){
+                console.log("E");
+                if (this.graphics.cameraLock === true){
+                    this.graphics.cameraLock = false;
+                } else {
+                    this.graphics.cameraLock = true;
+                }
+                
             }
         });
     }

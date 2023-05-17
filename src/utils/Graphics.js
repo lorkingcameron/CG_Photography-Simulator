@@ -4,6 +4,7 @@ import {RenderPass} from 'three/addons/postprocessing/RenderPass.js'
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js'
 import {GUI} from 'three/addons/libs/lil-gui.module.min.js'
 import {OrbitControls} from 'OrbitControls'
+import {PointerLockControls} from 'PointerLockControls'
 
 export default class Graphics {
     constructor() {
@@ -12,6 +13,7 @@ export default class Graphics {
         this._buildRenderer();
         this._initPostProcessing();
         this._addGUI();
+        this.cameraLock = false;
     }
     
     onWindowResize() {
@@ -29,7 +31,7 @@ export default class Graphics {
         var ratio = window.innerWidth/window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
         this.camera.filmGauge =100.0;
-        this.camera.position.set(40,15,15);
+        this.camera.position.set(0,0,0);
         this.camera.lookAt(0,0,5);
     
         this.scene.add(this.camera);
@@ -54,9 +56,10 @@ export default class Graphics {
     
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
-        this.controls = new OrbitControls(this.camera,this.renderer.domElement);
-        this.controls.target.set(0, 0, 0);
-        this.controls.update();
+        this.controls = new PointerLockControls(this.camera,this.renderer.domElement);
+        
+        //this.controls.target.set(0, 0, 0);
+        //this.controls.update();
     }
 
     _initPostProcessing() {
@@ -102,7 +105,13 @@ export default class Graphics {
 
     render() {
         this.renderer.render(this.scene, this.camera);
-        this.controls.update();
+        
         this.postprocessing.composer.render(0.1);
+        if (this.cameraLock === true){
+            this.controls.lock()
+        } else if (this.cameraLock===false){
+            this.controls.unlock();
+        }
+
     }
 }

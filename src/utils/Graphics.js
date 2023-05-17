@@ -23,6 +23,8 @@ export default class Graphics {
     _buildScene() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x114444 );
+        const axesIndicator = new THREE.AxesHelper(10);
+        this.scene.add(axesIndicator);
     }
 
     _buildCamera() {

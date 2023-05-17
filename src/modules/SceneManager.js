@@ -16,7 +16,8 @@ export default class SceneManager {
 
         this.lights = new Lighting(this.graphics.scene, this.graphics.camera);
 
-        this.terrain = new Terrain(this.physics);
+        this.terrainParams = {width: 300, length: 300, amp: 20, freq: 2, res: 1}
+        this.terrain = new Terrain(this.graphics.scene, this.physics, this.terrainParams);
 
         this._addObjects();
     }

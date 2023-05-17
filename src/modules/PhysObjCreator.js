@@ -11,7 +11,7 @@ export default class PhysObjCreator {
     _createSphere() {
         //create basic sphere
         const sphereBody = new CANNON.Body({
-            mass: 5,
+            mass: 500,
             shape: new CANNON.Sphere(1),
         });
         sphereBody.position.set(0, 7, 0);

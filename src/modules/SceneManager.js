@@ -13,7 +13,7 @@ export default class SceneManager {
 
         this.physics = new Physics(this.graphics.scene);
 
-        this.lights = new Lighting(this.graphics.scene, this.graphics.camera);
+        this.lights = new Lighting(this.graphics.scene, this.graphics.activeCamera);
 
         this._addObjects();
 
@@ -116,6 +116,7 @@ export default class SceneManager {
                         }
                     })
                 })
+                this.graphics._changeCamera();
             }
             if (name === "l"){
                 console.log("L");

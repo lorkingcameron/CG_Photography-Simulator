@@ -10,15 +10,17 @@ export default class Graphics {
     constructor() {
         this._buildScene();
         this._buildCamera();
+        this._buildViewfinderCamera()
         this._buildRenderer();
         this._initPostProcessing();
         this._addGUI();
         this.cameraLock = false;
+        this.activeCamera;
     }
     
     onWindowResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
+        this.activeCamera.aspect = window.innerWidth / window.innerHeight;
+        this.activeCamera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
@@ -33,8 +35,9 @@ export default class Graphics {
         this.camera.filmGauge =100.0;
         this.camera.position.set(0,0,0);
         this.camera.lookAt(0,0,5);
-    
+        
         this.scene.add(this.camera);
+        this.activeCamera = this.camera;
     }
 
    
@@ -56,7 +59,7 @@ export default class Graphics {
     
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
-        this.controls = new PointerLockControls(this.camera,this.renderer.domElement);
+        this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
         
         //this.controls.target.set(0, 0, 0);
         //this.controls.update();
@@ -64,9 +67,9 @@ export default class Graphics {
 
     _initPostProcessing() {
         this.postprocessing = {};
-        this.renderPass = new RenderPass( this.scene, this.camera );
+        this.renderPass = new RenderPass( this.scene, this.activeCamera );
 
-        this.bokehPass = new BokehPass(this.scene, this.camera, {
+        this.bokehPass = new BokehPass(this.scene, this.activeCamera, {
             focus: 7.0,
             aperture: 0.01,
             maxblur: 0.001
@@ -101,10 +104,19 @@ export default class Graphics {
             gui.close();
     }
 
+    _changeCamera(){
+        if (this.activeCamera === this.camera){
+            this.activeCamera = this.viewfinderCamera;
+        } else (
+            this.activeCamera = this.camera
+        )
+        console.log(this.activeCamera);
+    }
+
 
 
     render() {
-        this.renderer.render(this.scene, this.camera);
+        this.renderer.render(this.scene, this.activeCamera);
         
         this.postprocessing.composer.render(0.1);
         if (this.cameraLock === true){

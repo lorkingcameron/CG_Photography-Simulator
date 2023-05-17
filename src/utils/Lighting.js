@@ -2,13 +2,13 @@ import * as THREE from 'three'
 
 export default class Lighting {
     constructor (scene, camera) {
-        // this._createAmbient(scene);
+        this._createAmbient(scene);
         this._createPoint(scene);
         // this._createCameraLight(camera);
     }
     
     _createAmbient(scene) {
-        this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 10);
+        this.ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 1);
         scene.add(this.ambientlight);
     }
 

@@ -1,5 +1,6 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
+import TerrainTexture from '../utils/TerrainTexture.js';
 
 export default class Terrain {
     constructor(scene, physics, terrainParams) {
@@ -8,7 +9,8 @@ export default class Terrain {
 
         this._buildTerrainData();
         this._createGroundPlane(physics);
-        // this._buildMesh(this._buildGeometry(), this._buildMaterial());
+        this._buildWater();
+        this._buildMesh(this._buildGeometry(), this._buildMaterial());
     }
 
     _buildTerrainData() {
@@ -23,8 +25,8 @@ export default class Terrain {
             for(var y = 0; y < this.length; y++){
                 console.log(v)
                 v = (noise.perlin2((x * f) / 100, (y * f) / 100) + 1) / 2;
-                // this.data[x][y] = this._createIsland(v, x, y) * a;
-                this.data[x][y] = v * a;
+                this.data[x][y] = this._createIsland(v, x, y) * a;
+                // this.data[x][y] = v * a;
             }
         }
     }
@@ -38,7 +40,7 @@ export default class Terrain {
         console.log(dist, (10/(x - 3.25) + 4))
 
         if (dist < 0.75) {
-            return v * (10/(dist - 3.25) + 4);
+            return v * (3/(dist - 1.5) + 4);
         } else {
             return v * (3/(dist) - 4);
         }
@@ -57,7 +59,10 @@ export default class Terrain {
 
     _buildMaterial() {    
         // this.material = new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 0.0, map: texture });
-        var mat = new THREE.MeshPhongMaterial();
+        var terrainTexture = new TerrainTexture(this.data, this.width, this.length);
+        var texture = new THREE.CanvasTexture(terrainTexture.canvas);
+        var mat = new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 0.0, map: texture });
+        // mat.color = new THREE.Color(0x1c5917);
         // mat.wireframe = true;
         return mat;
     }
@@ -90,31 +95,63 @@ export default class Terrain {
         this.scene.add(mesh);
     }
 
-    // _addMappedPlane(size, detail, amp, color, x, y, z) {
-    //     const textureLoader = new THREE.TextureLoader();
-    //     const displacementMapTexture = textureLoader.load('src/assets/noise.png');
+    _buildWater() {
+        this.scene.remove(this.water);
+        this.scene.remove(this.deepWater);
 
-    //     var plane_geometry = new THREE.PlaneGeometry(size, size, detail, detail);
-    //     var plane_material = new THREE.MeshStandardMaterial({
-    //         wireframe: true,
-    //         color: color,
-    //         displacementMap: displacementMapTexture,
-    //         displacementScale: amp, // Adjust the scale as needed
-    //       });
-
-    //     this.terrain_mesh = new THREE.Mesh(plane_geometry, plane_material);
+        this.waveHeight = 1;
+        this.waterLevel = 0;
+    
+        let waterGeometry = new THREE.PlaneBufferGeometry(300, 300, 50, 50);
+        waterGeometry.rotateX(-Math.PI * 0.5);
+        let vertData = [];
+        let v3 = new THREE.Vector3(); // for re-use
+        for (let i = 0; i < waterGeometry.attributes.position.count; i++) {
+          v3.fromBufferAttribute(waterGeometry.attributes.position, i);
+          vertData.push({
+            initH: v3.y,
+            amplitude: THREE.MathUtils.randFloatSpread(this.waveHeight),
+            phase: THREE.MathUtils.randFloat(0, Math.PI)
+          })
+        }
+    
+        let waterMaterial = new THREE.MeshLambertMaterial({
+          color: 0x1c82c8, opacity: 0.8
+        });
+        waterMaterial.transparent = true;
+    
+        this.water = new THREE.Mesh(waterGeometry, waterMaterial);
+    
+        this.water.receiveShadow = true;
+        this.water.castShadow = true;
+        this.water.position.y = this.waterLevel;
         
-    //     this.terrain_mesh.position.set(x,y,z);
-    //     this.terrain_mesh.rotateX(-Math.PI/2);
-    // }
-
-    // _createGroundPlane(physics) {
-    //     const groundBody = new CANNON.Body({
-    //         // type: CANNON.Body.STATIC,
-    //         shape: new CANNON.Plane(),
-    //     });
-    //     groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-    //     groundBody.position.set(0, 0, 0);
-    //     physics.world.addBody(groundBody);
-    // }
+        this.water.tick = () => {
+            let time = clock.getElapsedTime();
+    
+            vertData.forEach((vd, idx) => {
+                let y = vd.initH + Math.sin(time + vd.phase) * vd.amplitude;
+                waterGeometry.attributes.position.setY(idx, y);
+            })
+            waterGeometry.attributes.position.needsUpdate = true;
+            waterGeometry.computeVertexNormals();
+        }
+        animatedObjects.push(this.water);
+    
+        let deepWaterGeometry = new THREE.PlaneGeometry(300, 300, 1, 1);
+        deepWaterGeometry.rotateX(-Math.PI * 0.5);
+        let deepWaterMaterial = new THREE.MeshLambertMaterial({
+          color: 0x1c82c8, opacity: 0.8
+        });
+        deepWaterMaterial.transparent = true;
+    
+        this.deepWater = new THREE.Mesh(deepWaterGeometry, deepWaterMaterial);    
+    
+        this.deepWater.receiveShadow = true;
+        this.deepWater.castShadow = true;
+        this.deepWater.position.y = this.waterLevel - (7/16 * this.waveHeight + 0.0225);
+    
+        this.scene.add(this.water);
+        this.scene.add(this.deepWater);
+      }
 }

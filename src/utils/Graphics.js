@@ -12,7 +12,6 @@ export default class Graphics {
         this._buildRenderer();
         this._initPostProcessing();
         this._addGUI();
-        this._controls();
     }
     
     onWindowResize() {
@@ -34,6 +33,16 @@ export default class Graphics {
         this.camera.lookAt(0,0,5);
     
         this.scene.add(this.camera);
+    }
+
+   
+    _buildViewfinderCamera() {
+        var ratio = window.innerWidth/window.innerHeight;
+        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.viewfinderCamera.position.set(40,15,15);
+        this.viewfinderCamera.filmGauge =100.0;
+
+        this.scene.add(this.viewfinderCamera);
     }
 
     _buildRenderer() {
@@ -89,41 +98,7 @@ export default class Graphics {
             gui.close();
     }
 
-    _controls() {
-        window.addEventListener("keydown", (e) =>{
-            var name = e.key;
-            if (name === "p"){
-                console.log("P");
-                this.postprocessing.bokeh.uniforms[ 'focus' ].value+=10;
-                console.log(this.postprocessing.bokeh.uniforms[ 'focus' ]);
-            }
-            if (name === "l"){
-                console.log("L");
-                this.postprocessing.bokeh.uniforms[ 'focus' ].value-=10;
-                console.log(this.postprocessing.bokeh.uniforms[ 'focus' ]);
-            }
-            if (name === "o"){
-                console.log("O");
-                this.postprocessing.bokeh.uniforms[ 'aperture' ].value+=0.1;
-                console.log(this.postprocessing.bokeh.uniforms[ 'aperture' ]);
-            }
-            if (name === "k"){
-                console.log("K");
-                this.postprocessing.bokeh.uniforms[ 'aperture' ].value-=0.1;
-                console.log(this.postprocessing.bokeh.uniforms[ 'aperture' ]);
-            }
-            if (name === "i"){
-                console.log("I");
-                this.postprocessing.bokeh.uniforms[ 'maxblur' ].value+=0.0001;
-                console.log(this.postprocessing.bokeh.uniforms[ 'maxblur' ]);
-            }
-            if (name === "j"){
-                console.log("J");
-                this.postprocessing.bokeh.uniforms[ 'maxblur' ].value-=0.0001;
-                console.log(this.postprocessing.bokeh.uniforms[ 'maxblur' ]);
-            }
-        });
-    }
+
 
     render() {
         this.renderer.render(this.scene, this.camera);

@@ -16,6 +16,12 @@ export default class SceneManager {
         this.lights = new Lighting(this.graphics.scene, this.graphics.camera);
 
         this._addObjects();
+
+        this._controls();
+
+        this.cameraModel;
+
+        this.cameraGroup = new THREE.Group();
     }
 
     _createObj(){
@@ -24,7 +30,10 @@ export default class SceneManager {
 
         gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
         // gltfLoader.load("../../models/scene.gltf", (file)=>{
-            this.graphics.scene.add(file.scene);
+            this.cameraModel = file.scene;
+            this.cameraGroup.add(this.cameraModel);
+            this.graphics.scene.add(this.cameraGroup);
+            console.log(this.cameraModel.position);
             file.scene.scale.set(10,10,10);
             file.scene.children.forEach(child=> {
                 //child.castShadow = true;
@@ -73,8 +82,9 @@ export default class SceneManager {
 
         this._createObj();
         
-        this._addCube(10, blue, 0, 0, 0);
-        this._addCube(4, blue, 0, 0, 0);
+        
+        // this._addCube(10, blue, 0, 0, 0);
+        // this._addCube(4, blue, 0, 0, 0);
         this._addCube(10, green, 35, 0, 0);
         this._addCube(10, green, -35, 0, 0);
         this._addCube(10, red, 0, 35, 0);
@@ -85,6 +95,58 @@ export default class SceneManager {
         const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
         // physObjCreator._createCube();
         // physObjCreator._createSphere();
+    }
+
+    _controls() {
+        window.addEventListener("keydown", (e) =>{
+            var name = e.key;
+            if (name === "p"){
+                console.log("P");
+                this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value+=10;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
+                this.cameraModel.children.forEach(child=>{
+                    child.children.forEach(child=>{
+                        console.log(child.name);
+                        if(child.name === "#CAM0001_Shutter_Speed"){
+                            child.rotation.y += Math.PI /8;
+                        }
+                    })
+                })
+            }
+            if (name === "l"){
+                console.log("L");
+                this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value-=10;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
+                this.cameraModel.children.forEach(child=>{
+                    child.children.forEach(child=>{
+                        console.log(child.name);
+                        if(child.name === "#CAM0001_Shutter_Speed"){
+                            child.rotation.y -= Math.PI /8;
+                        }
+                    })
+                })
+            }
+            if (name === "o"){
+                console.log("O");
+                this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ].value+=0.1;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ]);
+            }
+            if (name === "k"){
+                console.log("K");
+                this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ].value-=0.1;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ]);
+            }
+            if (name === "i"){
+                console.log("I");
+                this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value+=0.0001;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
+            }
+            if (name === "j"){
+                console.log("J");
+                this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value-=0.0001;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
+            }
+        });
     }
 
     _tick() {

@@ -9,7 +9,7 @@ export default class Terrain {
         // this._addMappedPlane(300, 100, 30, 0xffffff, 0, -50, 0);
         this._buildTerrainData();
         this._createGroundPlane(physics);
-        this._buildMesh(this._buildGeometry(), this._buildMaterial());
+        // this._buildMesh(this._buildGeometry(), this._buildMaterial());
     }
 
     _buildTerrainData() {

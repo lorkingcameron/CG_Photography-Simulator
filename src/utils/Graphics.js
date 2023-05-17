@@ -31,7 +31,7 @@ export default class Graphics {
         var ratio = window.innerWidth/window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
         this.camera.filmGauge =100.0;
-        this.camera.position.set(40,15,15);
+        this.camera.position.set(0,3,-5);
         this.camera.lookAt(0,0,5);
     
         this.scene.add(this.camera);

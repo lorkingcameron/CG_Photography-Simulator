@@ -6,10 +6,9 @@ export default class Terrain {
         this.scene = scene;
         Object.assign(this, terrainParams);
 
-        // this._addMappedPlane(300, 100, 30, 0xffffff, 0, -50, 0);
         this._buildTerrainData();
         this._createGroundPlane(physics);
-        this._buildMesh(this._buildGeometry(), this._buildMaterial());
+        // this._buildMesh(this._buildGeometry(), this._buildMaterial());
     }
 
     _buildTerrainData() {
@@ -17,12 +16,31 @@ export default class Terrain {
 
         var a = this.amp; // amplitude
         var f = this.freq; // frequency
+        var v = 0; // value
 
         this.data = Array.from(Array(this.width), () => new Array(this.length));
         for(var x = 0; x < this.width; x++){
             for(var y = 0; y < this.length; y++){
-                this.data[x][y] = noise.perlin2((x * f) / 100, (y * f) / 100) * a;
+                console.log(v)
+                v = (noise.perlin2((x * f) / 100, (y * f) / 100) + 1) / 2;
+                // this.data[x][y] = this._createIsland(v, x, y) * a;
+                this.data[x][y] = v * a;
             }
+        }
+    }
+
+    // Function to reduce value (height) further from center to create an island
+    _createIsland(v, x, y) {
+        var x_dist = 2 * x / this.width - 1; // finds the percentage distance from the center
+        var y_dist = 2 * y / this.length - 1;
+    
+        var dist = Math.sqrt(x_dist**2 + y_dist**2);
+        console.log(dist, (10/(x - 3.25) + 4))
+
+        if (dist < 0.75) {
+            return v * (10/(dist - 3.25) + 4);
+        } else {
+            return v * (3/(dist) - 4);
         }
     }
 
@@ -39,8 +57,8 @@ export default class Terrain {
 
     _buildMaterial() {    
         // this.material = new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 0.0, map: texture });
-        var mat = new THREE.MeshNormalMaterial();
-        mat.wireframe = true;
+        var mat = new THREE.MeshPhongMaterial();
+        // mat.wireframe = true;
         return mat;
     }
     

@@ -2,9 +2,9 @@ import * as THREE from 'three'
 
 export default class Lighting {
     constructor (scene, camera) {
-        this._createAmbient(scene);
+        // this._createAmbient(scene);
         this._createPoint(scene);
-        this._createCameraLight(camera);
+        // this._createCameraLight(camera);
     }
     
     _createAmbient(scene) {

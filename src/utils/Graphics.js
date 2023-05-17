@@ -12,6 +12,7 @@ export default class Graphics {
         this._buildRenderer();
         this._initPostProcessing();
         this._addGUI();
+        this._controls();
     }
     
     onWindowResize() {
@@ -56,7 +57,7 @@ export default class Graphics {
         this.bokehPass = new BokehPass(this.scene, this.camera, {
             focus: 7.0,
             aperture: 0.01,
-            maxblur: 0.00
+            maxblur: 0.001
         } );
 
         this.composer = new EffectComposer( this.renderer );
@@ -69,8 +70,8 @@ export default class Graphics {
     }
 
     _updatePost() {
-        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
-        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
+        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus *0.1;
+        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture *0.00001;
         this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
     }
 
@@ -84,8 +85,44 @@ export default class Graphics {
         const gui = new GUI();
             gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
             gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
-            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( () => {this._updatePost()} );
+            gui.add( this.effectController, 'maxblur', 0.0, 0.5, 0.001 ).onChange( () => {this._updatePost()} );
             gui.close();
+    }
+
+    _controls() {
+        window.addEventListener("keydown", (e) =>{
+            var name = e.key;
+            if (name === "p"){
+                console.log("P");
+                this.postprocessing.bokeh.uniforms[ 'focus' ].value+=10;
+                console.log(this.postprocessing.bokeh.uniforms[ 'focus' ]);
+            }
+            if (name === "l"){
+                console.log("L");
+                this.postprocessing.bokeh.uniforms[ 'focus' ].value-=10;
+                console.log(this.postprocessing.bokeh.uniforms[ 'focus' ]);
+            }
+            if (name === "o"){
+                console.log("O");
+                this.postprocessing.bokeh.uniforms[ 'aperture' ].value+=0.1;
+                console.log(this.postprocessing.bokeh.uniforms[ 'aperture' ]);
+            }
+            if (name === "k"){
+                console.log("K");
+                this.postprocessing.bokeh.uniforms[ 'aperture' ].value-=0.1;
+                console.log(this.postprocessing.bokeh.uniforms[ 'aperture' ]);
+            }
+            if (name === "i"){
+                console.log("I");
+                this.postprocessing.bokeh.uniforms[ 'maxblur' ].value+=0.0001;
+                console.log(this.postprocessing.bokeh.uniforms[ 'maxblur' ]);
+            }
+            if (name === "j"){
+                console.log("J");
+                this.postprocessing.bokeh.uniforms[ 'maxblur' ].value-=0.0001;
+                console.log(this.postprocessing.bokeh.uniforms[ 'maxblur' ]);
+            }
+        });
     }
 
     render() {

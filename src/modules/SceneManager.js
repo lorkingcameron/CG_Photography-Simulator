@@ -25,7 +25,7 @@ export default class SceneManager {
         gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
         // gltfLoader.load("../../models/scene.gltf", (file)=>{
             this.graphics.scene.add(file.scene);
-            file.scene.scale.set(100,100,100);
+            file.scene.scale.set(10,10,10);
             file.scene.children.forEach(child=> {
                 //child.castShadow = true;
                 child.receiveShadow = true;
@@ -39,7 +39,7 @@ export default class SceneManager {
     _addCube(size, colour, x, y, z) {
         var material = new THREE.MeshBasicMaterial();
         material.color = new THREE.Color(colour);
-        material.wireframe = true;
+        material.wireframe = false;
         var geometry_cube = new THREE.BoxGeometry(size, size, size);
         var cube = new THREE.Mesh(geometry_cube, material);
         cube.position.set(x,y,z);
@@ -52,7 +52,7 @@ export default class SceneManager {
 
         var plane_geometry = new THREE.PlaneGeometry(size, size, detail, detail);
         var plane_material = new THREE.MeshStandardMaterial({
-            wireframe: true,
+            wireframe: false,
             color: colour,
             displacementMap: displacementMapTexture,
             displacementScale: amp, // Adjust the scale as needed
@@ -73,14 +73,14 @@ export default class SceneManager {
 
         this._createObj();
         
-        // this._addCube(10, blue, 0, 0, 0);
-        // this._addCube(4, blue, 0, 0, 0);
-        // this._addCube(10, green, 35, 0, 0);
-        // this._addCube(10, green, -35, 0, 0);
-        // this._addCube(10, red, 0, 35, 0);
-        // this._addCube(10, red, 0, -35, 0);
+        this._addCube(10, blue, 0, 0, 0);
+        this._addCube(4, blue, 0, 0, 0);
+        this._addCube(10, green, 35, 0, 0);
+        this._addCube(10, green, -35, 0, 0);
+        this._addCube(10, red, 0, 35, 0);
+        this._addCube(10, red, 0, -35, 0);
 
-        // this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
+        this._addMappedPlane(300, 100, 30, white, 0, -50, 0);
 
         const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
         // physObjCreator._createCube();

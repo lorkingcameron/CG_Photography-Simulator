@@ -15,15 +15,10 @@ export default class Trees {
         this.placedDots = [] // dots represent trees of coordinates [x, y]
 
         this._buildTrees();
-        // this._buildTree([160, 175]);
-        // this._buildTree([200, 100]);
-        // this._buildTree([100, 200]);
-        // this._buildTree([150, 150]);
-        // this._buildTree([200, 200]);
     }
 
     _buildTrees() {
-        var numTrees = 4;
+        var numTrees = 20;
 
         for (var i = 0; i < numTrees; i++) {
             this._placeNewDot();
@@ -49,7 +44,8 @@ export default class Trees {
                 material: this.physics.materials.treeMat
             });
             treeBody.addShape(shape, offset)
-            treeBody.position.set(pos[1] - this.terrainParams.width/2, this.data[pos[1]][pos[0]], pos[0] - this.terrainParams.length/2);
+            treeBody.position.set(pos[0] - this.terrainParams.width/2, this.data[pos[0]][this.terrainParams.length/this.terrainParams.res - pos[1]], pos[1] - this.terrainParams.length/2);
+
             this.scene.add(file.scene);
             this.physics.world.addBody(treeBody);
             this.physics.physicsBodies.push([treeBody, file.scene]);
@@ -58,8 +54,8 @@ export default class Trees {
 
     _generateRandomPosition() {
         return [
-        Math.round(Math.random() * 0.5 * this.terrainParams.width) + this.terrainParams.width/4,
-        Math.round(Math.random() * 0.5 * this.terrainParams.length) + this.terrainParams.length/4];
+        Math.round(Math.random() * this.terrainParams.width / 2 + this.terrainParams.width / 4),
+        Math.round(Math.random() * this.terrainParams.length / 2 + this.terrainParams.length / 4)];
     }
 
     _getDistanceToNearestDot(dot) {

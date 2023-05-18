@@ -138,21 +138,21 @@ export default class Graphics {
     _saveAsImage() {
         this.imgData
         this.imgNode;
-        console.log("click");
-    
-        try {
-            this.strMime = "image/jpeg";
-            this.strDownloadMime = "image/octet-stream";
-            console.log(this.renderer);
-            this.imgData = this.renderer.domElement.toDataURL(this.strMime);
-            console.log(this.renderer.domElement);
-    
-            this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "Photo.jpg");
-    
-        } catch (e) {
-            console.log(e);
-            return;
-        }
+        if(this.activeCamera === this.camera){
+            try {
+                this.strMime = "image/jpeg";
+                this.strDownloadMime = "image/octet-stream";
+                console.log(this.renderer);
+                this.imgData = this.renderer.domElement.toDataURL(this.strMime);
+                console.log(this.renderer.domElement);
+        
+                this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "Photo.jpg");
+        
+            } catch (e) {
+                console.log(e);
+                return;
+            }
+    }
     }
 
     _saveFile(strData, filename) {

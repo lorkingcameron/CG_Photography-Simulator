@@ -1,8 +1,13 @@
 import * as THREE from 'three'
+import * as CANNON from 'cannon-es'
 
 export class CharacterControls {
     
-    constructor(model, mixer, animationsMap, orbitControl, camera, currentAction) {
+    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, currentAction) {
+        this.scene = scene;
+        this.world = world;
+        this.physicsBodies = physicsBodies;
+
         this.DIRECTIONS = ['w', 'a', 's', 'd']; // should be constant instead of a property
         this.model = model;
         this.mixer = mixer;
@@ -27,10 +32,23 @@ export class CharacterControls {
         this.rotateAngle = new THREE.Vector3(0, 1, 0);
         this.rotateQuaternion = new THREE.Quaternion();
         this.cameraTarget = new THREE.Vector3();
+
+        this.model.position.set(0, 4, 0);
+        this.camera.position.set(0,9,-5);
+        this._updateCameraTarget(0,0);
+        this._bindCharacter();
+
+        this.cameraAngle = new THREE.Vector3(
+            this.model.position.x - this.camera.position.x,
+            this.model.position.y - this.camera.position.y,
+            this.model.position.z - this.camera.position.z,
+        );
     }
 
 
     update(delta, keysPressed) {
+        
+
         // Get current command
         const directionPressed = this.DIRECTIONS.some(key => keysPressed[key] == true);
         var play = '';
@@ -80,10 +98,33 @@ export class CharacterControls {
             // Move the model & camera (TODO SHOULD BE DONE WITH PHYSICS)
             const moveX = this.walkDir.x * velocity * delta;
             const moveZ = this.walkDir.z * velocity * delta;
-            this.model.position.x += moveX;
-            this.model.position.z += moveZ;
-            this._updateCameraTarget(moveX, moveZ);
+            // this.model.position.x += moveX;
+            // this.model.position.z += moveZ;
+            // this._updateCameraTarget(moveX, moveZ);
+        } else {
+            // this._updateCameraTarget(0, 0);w
         }
+
+        // Handle hitbox binding
+        this.model.position.x = this.hitbox.position.x;
+        this.model.position.y = this.hitbox.position.y - 1;
+        this.model.position.z = this.hitbox.position.z;
+       
+
+        this.camera.position.x = this.model.position.x - this.cameraAngle.x;
+        this.camera.position.y = this.model.position.y - this.cameraAngle.y;
+        this.camera.position.z = this.model.position.z - this.cameraAngle.z;
+
+        this.cameraTarget.x = this.model.position.x
+        this.cameraTarget.y = this.model.position.y + 1
+        this.cameraTarget.z = this.model.position.z
+        this.orbitControl.target = this.cameraTarget
+
+        console.log("===============================");
+        console.log(Math.floor(this.model.position.x), Math.floor(this.model.position.y), Math.floor(this.model.position.z), "Char");
+        console.log(Math.floor(this.camera.position.x), Math.floor(this.camera.position.y), Math.floor(this.camera.position.z), "Camera");
+        console.log(Math.floor(this.cameraAngle.x), Math.floor(this.cameraAngle.y), Math.floor(this.cameraAngle.z));
+        
     }
 
     _updateCameraTarget(moveX, moveZ) {
@@ -124,5 +165,17 @@ export class CharacterControls {
         }
 
         return directionOffset
+    }
+
+    _bindCharacter() {
+        const sphereBody = new CANNON.Body({
+            mass: 500,
+            shape: new CANNON.Sphere(1),
+        });
+        sphereBody.position.set(5, 7, 0);
+        this.world.addBody(sphereBody);
+        this.hitbox = sphereBody;
+
+        // this.physicsBodies.push([sphereBody, this.model]);
     }
 }

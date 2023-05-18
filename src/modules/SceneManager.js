@@ -19,6 +19,8 @@ export default class SceneManager {
 
         this.physics = new Physics(this.graphics.scene);
 
+        this.physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
+
         this.lights = new Lighting(this.graphics.scene, this.graphics.camera);
 
         this.terrainParams = {width: 100, length: 100, amp: 10, freq: 2, res: 1}
@@ -50,9 +52,9 @@ export default class SceneManager {
     _addObjects() {
         // this._createObj();
 
-        const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
-        physObjCreator._createCube();
-        physObjCreator._createSphere();
+        
+        this.physObjCreator._createCube();
+        this.physObjCreator._createSphere();
     }
 
     _createCharacter() {
@@ -72,7 +74,8 @@ export default class SceneManager {
                 console.log(a.name, mixer.clipAction(a));
             });
 
-            this.characterControls = new CharacterControls(model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, 'Idle');
+            this.characterControls = new CharacterControls(this.graphics.scene, this.physics.world, this.physics.physicsBodies,
+                model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, 'Idle');
         });
     }
 

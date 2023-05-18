@@ -48,9 +48,9 @@ export default class Graphics {
         target.appendChild(this.renderer.domElement);
         this.controls = new OrbitControls(this.camera,this.renderer.domElement);
         this.controls.target.set(0, 0, 0);
-        this.controls.enablePan = false;
-        this.controls.minDistance = 3;
-        this.controls.maxDistance = 20;
+        // this.controls.enablePan = false;
+        // this.controls.minDistance = 3;
+        // this.controls.maxDistance = 20;
         this.controls.update();
     }
 

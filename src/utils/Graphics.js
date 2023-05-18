@@ -46,7 +46,6 @@ export default class Graphics {
         this.camera.lookAt(0,0,5);
         
         this.scene.add(this.camera);
-        this.activeCamera = this.camera;
     }
 
    
@@ -57,7 +56,9 @@ export default class Graphics {
         this.viewfinderCamera.filmGauge =100.0;
 
         this.scene.add(this.viewfinderCamera);
+        this.activeCamera = this.viewfinderCamera;
     }
+    
 
     _buildRenderer() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
@@ -114,9 +115,20 @@ export default class Graphics {
 
     _changeCamera(){
         if (this.activeCamera === this.camera){
+            console.log("change camera");
+            this.renderer.resetState();
             this.activeCamera = this.viewfinderCamera;
+            this._initPostProcessing();
+            this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+            
         } else {
+            console.log("change camera");
+            this.renderer.resetState();    
             this.activeCamera = this.camera;
+            this._initPostProcessing();
+            this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+            
+
         }
         console.log(this.activeCamera);
     }
@@ -159,7 +171,7 @@ export default class Graphics {
 
 
     render() {
-        this.renderer.render(this.scene, this.activeCamera);
+        this.renderer.render(this.scene, this.camera);
         
         this.postprocessing.composer.render(0.1);
         if (this.cameraLock === true){

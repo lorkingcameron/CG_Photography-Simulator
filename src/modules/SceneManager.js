@@ -37,7 +37,7 @@ export default class SceneManager {
             this.graphics.scene.add(this.cameraGroup);
             //this.graphics.camera.position.set(0,0,0);
             this.cameraGroup.add(this.graphics.camera);
-            console.log(this.cameraModel.position);
+            
             file.scene.scale.set(10,10,10);
             file.scene.children.forEach(child=> {
                 //child.castShadow = true;
@@ -110,7 +110,6 @@ export default class SceneManager {
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
                 this.cameraModel.children.forEach(child=>{
                     child.children.forEach(child=>{
-                        console.log(child.name);
                         if(child.name === "#CAM0001_Shutter_Speed"){
                             child.rotation.y += Math.PI /8;
                         }
@@ -124,7 +123,6 @@ export default class SceneManager {
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
                 this.cameraModel.children.forEach(child=>{
                     child.children.forEach(child=>{
-                        console.log(child.name);
                         if(child.name === "#CAM0001_Shutter_Speed"){
                             child.rotation.y -= Math.PI /8;
                         }

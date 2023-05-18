@@ -5,10 +5,13 @@ import * as THREE from 'three'
 export default class Physics {
     constructor (scene) {
         this._buildPhysics();
-        this._buildDebugger(scene);
+        // this._buildDebugger(scene);
     }
 
     updatePhysics(){
+        this.world.fixedStep();
+        // this.CannonDebugger.update();
+
         for (var i = 0; i < this.physicsBodies.length; i++) {
             let body = this.physicsBodies[i][0];
             let mesh = this.physicsBodies[i][1];
@@ -16,9 +19,6 @@ export default class Physics {
             mesh.position.copy(body.position);
             mesh.quaternion.copy(body.quaternion);
         }
-
-        this.world.fixedStep();
-        this.CannonDebugger.update();
     }
 
     _buildDebugger(scene) {
@@ -35,17 +35,5 @@ export default class Physics {
             gravity: new CANNON.Vec3(0, -10, 0) // m/s²
         });
         this.world = world;
-
-        this._createGroundPlane();
-    }
-
-    _createGroundPlane() {
-        const groundBody = new CANNON.Body({
-            type: CANNON.Body.STATIC,
-            shape: new CANNON.Plane(),
-        });
-        groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-        groundBody.position.set(0, 0, 0);
-        this.world.addBody(groundBody);
     }
 }

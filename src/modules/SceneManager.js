@@ -105,7 +105,7 @@ export default class SceneManager {
         window.addEventListener("keydown", (e) =>{
             var name = e.key;
             if (name === "p"){
-                console.log("P");
+                console.log("Focus Up");
                 this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value+=10;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
                 this.cameraModel.children.forEach(child=>{
@@ -119,7 +119,7 @@ export default class SceneManager {
                 this.graphics._changeCamera();
             }
             if (name === "l"){
-                console.log("L");
+                console.log("Focus Down");
                 this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value-=10;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
                 this.cameraModel.children.forEach(child=>{
@@ -132,22 +132,22 @@ export default class SceneManager {
                 })
             }
             if (name === "o"){
-                console.log("O");
+                console.log("Aperture Up");
                 this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ].value+=0.1;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ]);
             }
             if (name === "k"){
-                console.log("K");
+                console.log("Aperture Down");
                 this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ].value-=0.1;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ]);
             }
             if (name === "i"){
-                console.log("I");
+                console.log("MaxBlur up");
                 this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value+=0.0001;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
             }
             if (name === "j"){
-                console.log("J");
+                console.log("MaxBlur down");
                 this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value-=0.0001;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
             }

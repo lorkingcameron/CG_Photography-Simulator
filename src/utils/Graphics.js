@@ -18,14 +18,13 @@ export default class Graphics {
         this.activeCamera;
         this.saveLink = document.createElement('div');
         this.saveLink.style.position = 'absolute';
-        this.saveLink.style.top = '10px';
+        this.saveLink.style.bottom = '30px';
         this.saveLink.style.width = '100%';
-        this.saveLink.style.background = '#FFFFFF';
         this.saveLink.style.textAlign = 'center';
-        this.saveLink.innerHTML = '<a href="#" id="saveLink">Save Frame</a>';
+        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
         document.body.appendChild(this.saveLink);
         document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
-        
+
     }
     
     onWindowResize() {
@@ -53,7 +52,7 @@ export default class Graphics {
    
     _buildViewfinderCamera() {
         var ratio = window.innerWidth/window.innerHeight;
-        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio/2, 1, 1000);
         this.viewfinderCamera.position.set(40,15,15);
         this.viewfinderCamera.filmGauge =100.0;
 
@@ -71,8 +70,7 @@ export default class Graphics {
         target.appendChild(this.renderer.domElement);
         this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
         
-        //this.controls.target.set(0, 0, 0);
-        //this.controls.update();
+        
     }
 
     _initPostProcessing() {
@@ -116,16 +114,13 @@ export default class Graphics {
 
     _changeCamera(){
         if (this.activeCamera === this.camera){
-            this.activeCamera = this.viewfinderCamera
-        } else (
-            this.activeCamera = this.camera
-        )
+            this.activeCamera = this.viewfinderCamera;
+        } else {
+            this.activeCamera = this.camera;
+        }
         console.log(this.activeCamera);
     }
 
-    _clickTest(){
-        console.log("click");
-    }
 
     _saveAsImage() {
         this.imgData
@@ -139,7 +134,7 @@ export default class Graphics {
             this.imgData = this.renderer.domElement.toDataURL(this.strMime);
             console.log(this.renderer.domElement);
     
-            this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "test.jpg");
+            this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "Photo.jpg");
     
         } catch (e) {
             console.log(e);

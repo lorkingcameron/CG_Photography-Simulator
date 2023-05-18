@@ -16,6 +16,16 @@ export default class Graphics {
         this._addGUI();
         this.cameraLock = false;
         this.activeCamera;
+        this.saveLink = document.createElement('div');
+        this.saveLink.style.position = 'absolute';
+        this.saveLink.style.top = '10px';
+        this.saveLink.style.width = '100%';
+        this.saveLink.style.background = '#FFFFFF';
+        this.saveLink.style.textAlign = 'center';
+        this.saveLink.innerHTML = '<a href="#" id="saveLink">Save Frame</a>';
+        document.body.appendChild(this.saveLink);
+        document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
+        
     }
     
     onWindowResize() {
@@ -54,6 +64,7 @@ export default class Graphics {
         this.renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
         this.renderer.setSize(window.innerWidth,window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.preserveDrawingBuffer = true;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
@@ -112,6 +123,44 @@ export default class Graphics {
         )
         console.log(this.activeCamera);
     }
+
+    _clickTest(){
+        console.log("click");
+    }
+
+    _saveAsImage() {
+        this.imgData
+        this.imgNode;
+        console.log("click");
+    
+        try {
+            this.strMime = "image/jpeg";
+            this.strDownloadMime = "image/octet-stream";
+            console.log(this.renderer);
+            this.imgData = this.renderer.domElement.toDataURL(this.strMime);
+            console.log(this.renderer.domElement);
+    
+            this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "test.jpg");
+    
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+    }
+
+    _saveFile(strData, filename) {
+        this.link = document.createElement('a');
+        if (typeof this.link.download === 'string') {
+            document.body.appendChild(this.link); //Firefox requires the link to be in the body
+            this.link.download = filename;
+            this.link.href = strData;
+            this.link.click();
+            document.body.removeChild(this.link); //remove the link when done
+        } else {
+            location.replace(uri);
+        }
+    }
+    
 
 
 

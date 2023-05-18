@@ -61,10 +61,9 @@ export default class Graphics {
     }
 
     _buildRenderer() {
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
         this.renderer.setSize(window.innerWidth,window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.preserveDrawingBuffer = true;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     
@@ -117,7 +116,7 @@ export default class Graphics {
 
     _changeCamera(){
         if (this.activeCamera === this.camera){
-            this.activeCamera = this.viewfinderCamera;
+            this.activeCamera = this.viewfinderCamera
         } else (
             this.activeCamera = this.camera
         )

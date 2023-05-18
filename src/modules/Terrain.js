@@ -1,6 +1,7 @@
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
-import TerrainTexture from '../utils/TerrainTexture.js';
+import TerrainTexture from '../utils/TerrainTexture.js'
+import Trees from './Trees.js'
 
 export default class Terrain {
     constructor(scene, physics, terrainParams) {
@@ -11,6 +12,7 @@ export default class Terrain {
         this._createGroundPlane(physics);
         this._buildWater();
         this._buildMesh(this._buildGeometry(), this._buildMaterial());
+        this.tree = new Trees(this.scene, physics, this.data);
     }
 
     _buildTerrainData() {
@@ -51,6 +53,7 @@ export default class Terrain {
             shape: new CANNON.Heightfield(this.data, {
                 elementSize: this.res, // Distance between the data points in X and Y directions
             }),
+            material: physics.materials.groundMat,
         });
         groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
         groundBody.position.set(-(this.width/2), 0, (this.length/2));
@@ -153,5 +156,5 @@ export default class Terrain {
     
         this.scene.add(this.water);
         this.scene.add(this.deepWater);
-      }
+    }
 }

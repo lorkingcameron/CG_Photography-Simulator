@@ -17,6 +17,7 @@
     "dependencies": {
         "cannon-es": "^0.20.0",
         "cannon-es-debugger": "^1.0.0",
-        "noisejs": "^2.1.0"
+        "noisejs": "^2.1.0",
+        "three-to-cannon": "^4.3.0"
     }
 }

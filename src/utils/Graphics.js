@@ -14,6 +14,11 @@ export default class Graphics {
         this._buildRenderer();
         this._initPostProcessing();
         this._addGUI();
+
+        this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
+        this.renderer.setClearColor(this.scene.fog.color);
+        this.scene.background = this.scene.fog.color;
+
         this.cameraLock = false;
         this.activeCamera;
         this.saveLink = document.createElement('div');

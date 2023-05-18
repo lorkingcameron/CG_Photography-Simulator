@@ -5,12 +5,13 @@ import * as THREE from 'three'
 export default class Physics {
     constructor (scene) {
         this._buildPhysics();
-        // this._buildDebugger(scene);
+        this._buildContactMaterials();
+        this._buildDebugger(scene);
     }
 
     updatePhysics(){
         this.world.fixedStep();
-        // this.CannonDebugger.update();
+        this.CannonDebugger.update();
 
         for (var i = 0; i < this.physicsBodies.length; i++) {
             let body = this.physicsBodies[i][0];
@@ -35,5 +36,23 @@ export default class Physics {
             gravity: new CANNON.Vec3(0, -10, 0) // m/s²
         });
         this.world = world;
+    }
+
+    _buildContactMaterials() {
+        this.materials = {
+            groundMat: new CANNON.Material("groundMat")
+        }
+
+        this.materials.treeMat = new CANNON.Material("treeMat");
+
+        var treeGroundCM = new CANNON.ContactMaterial(
+            this.materials.treeMat,
+            this.materials.groundMat,
+            {
+                friction: 1,
+                restitution: 0
+            }
+        )
+        this.world.addContactMaterial(treeGroundCM);
     }
 }

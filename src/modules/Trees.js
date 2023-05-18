@@ -32,7 +32,7 @@ export default class Trees {
 
                 var {shape, offset, quaternion} = threeToCannon(file.scene,  {type: ShapeType.BOX})
                 var treeBody = new CANNON.Body({
-                    mass: 10,
+                    mass: 0,
                     material: this.physics.materials.treeMat
                 });
                 treeBody.addShape(shape, offset)

@@ -42,8 +42,7 @@ export default class Graphics {
         var ratio = window.innerWidth/window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
         this.camera.filmGauge =100.0;
-        this.camera.position.set(100, 100, 100);
-        this.camera.lookAt(0,0,0);
+        this.camera.position.set(0, 40, 0);
         
         this.scene.add(this.camera);
     }
@@ -52,8 +51,10 @@ export default class Graphics {
     _buildViewfinderCamera() {
         var ratio = window.innerWidth/window.innerHeight;
         this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
-        this.viewfinderCamera.position.set(0,50,0);
+        this.viewfinderCamera.position.set(0,41.5,-1);
         this.viewfinderCamera.filmGauge =100.0;
+        this.viewfinderCamera.lookAt(0,40,0);
+
 
         this.scene.add(this.viewfinderCamera);
         this.activeCamera = this.viewfinderCamera;

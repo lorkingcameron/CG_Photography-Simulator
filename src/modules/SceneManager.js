@@ -35,16 +35,14 @@ export default class SceneManager {
         const textureLoader = new TextureLoader();
 
         gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
-        // gltfLoader.load("../../models/scene.gltf", (file)=>{
             this.cameraModel = file.scene;
+            this.cameraModel.position.set(0,40,0);
             this.cameraGroup.add(this.cameraModel);
             this.graphics.scene.add(this.cameraGroup);
-            //this.graphics.camera.position.set(0,0,0);
             this.cameraGroup.add(this.graphics.camera);
-            
+            this.cameraGroup.add(this.graphics.viewfinderCamera);
             file.scene.scale.set(10,10,10);
             file.scene.children.forEach(child=> {
-                //child.castShadow = true;
                 child.receiveShadow = true;
                 if(child.name === ""){
 
@@ -65,30 +63,32 @@ export default class SceneManager {
     _controls() {
         window.addEventListener("keydown", (e) =>{
             var name = e.key;
+            if (name === "c"){
+                this.graphics._changeCamera();
+            }
             if (name === "p"){
                 console.log("Focus Up");
                 this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value+=10;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
-                // this.cameraModel.children.forEach(child=>{
-                //     child.children.forEach(child=>{
-                //         if(child.name === "#CAM0001_Shutter_Speed"){
-                //             child.rotation.y += Math.PI /8;
-                //         }
-                //     })
-                // })
-                this.graphics._changeCamera();
+                this.cameraModel.children.forEach(child=>{
+                    child.children.forEach(child=>{
+                        if(child.name === "#CAM0001_Shutter_Speed"){
+                            child.rotation.y += Math.PI /8;
+                        }
+                    })
+                })
             }
             if (name === "l"){
                 console.log("Focus Down");
                 this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value-=10;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
-                // this.cameraModel.children.forEach(child=>{
-                //     child.children.forEach(child=>{
-                //         if(child.name === "#CAM0001_Shutter_Speed"){
-                //             child.rotation.y -= Math.PI /8;
-                //         }
-                //     })
-                // })
+                this.cameraModel.children.forEach(child=>{
+                    child.children.forEach(child=>{
+                        if(child.name === "#CAM0001_Shutter_Speed"){
+                            child.rotation.y -= Math.PI /8;
+                        }
+                    })
+                })
             }
             if (name === "o"){
                 console.log("Aperture Up");

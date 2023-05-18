@@ -4,7 +4,7 @@ export default class Lighting {
     constructor (scene, camera) {
         this._createAmbient(scene);
         this._createPoint(scene);
-        // this._createCameraLight(camera);
+        this._createCameraLight(camera);
     }
     
     _createAmbient(scene) {
@@ -24,7 +24,7 @@ export default class Lighting {
     }
 
     _createCameraLight(camera) {
-        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 20);
+        this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 20,10);
         this.cameralight.castShadow = true;
         camera.add(this.cameralight);
     }

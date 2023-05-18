@@ -55,7 +55,7 @@ export default class SceneManager {
 
     //Add all shapes to the scene
     _addObjects() {
-        // this._createObj();
+        this._createObj();
 
         const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
         physObjCreator._createCube();

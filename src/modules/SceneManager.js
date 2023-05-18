@@ -56,8 +56,8 @@ export default class SceneManager {
         this._createObj();
 
         const physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
-        physObjCreator._createCube();
-        physObjCreator._createSphere();
+        // physObjCreator._createCube();
+        // physObjCreator._createSphere();
     }
 
     _controls() {

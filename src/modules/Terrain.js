@@ -12,7 +12,7 @@ export default class Terrain {
         this._createGroundPlane(physics);
         this._buildWater();
         this._buildMesh(this._buildGeometry(), this._buildMaterial());
-        this.tree = new Trees(this.scene, physics, this.data);
+        this.tree = new Trees(this.scene, physics, this.data, terrainParams);
     }
 
     _buildTerrainData() {

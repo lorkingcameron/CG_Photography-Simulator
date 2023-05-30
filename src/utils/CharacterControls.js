@@ -75,6 +75,7 @@ export class CharacterControls {
         this.mixer.update(delta);
 
         if (this.currentAction == 'Run' || this.currentAction == 'Walk') {
+            // this.hitbox.mass = 500;
             // Find angle toward camera direction
             var angleYCameraDirection = Math.atan2(
                 (this.camera.position.x - this.model.position.x),
@@ -96,13 +97,19 @@ export class CharacterControls {
             const velocity = this.currentAction == 'Run' ? this.runVelocity : this.walkVelocity;
 
             // Move the model & camera (TODO SHOULD BE DONE WITH PHYSICS)
-            const moveX = this.walkDir.x * velocity * delta;
-            const moveZ = this.walkDir.z * velocity * delta;
+            // const moveX = this.walkDir.x * velocity * delta;
+            // const moveZ = this.walkDir.z * velocity * delta;
             // this.model.position.x += moveX;
             // this.model.position.z += moveZ;
             // this._updateCameraTarget(moveX, moveZ);
+
+            this.hitbox.velocity.x = this.walkDir.x * velocity;
+            this.hitbox.velocity.z = this.walkDir.z * velocity;
         } else {
-            // this._updateCameraTarget(0, 0);w
+            // this.hitbox.mass = 0;
+            this.hitbox.velocity.x = 0;
+            this.hitbox.velocity.y = 0;
+            this.hitbox.velocity.z = 0;
         }
 
         // Handle hitbox binding
@@ -110,7 +117,7 @@ export class CharacterControls {
         this.model.position.y = this.hitbox.position.y - 1;
         this.model.position.z = this.hitbox.position.z;
        
-
+        // Bind camera position
         this.camera.position.x = this.model.position.x - this.cameraAngle.x;
         this.camera.position.y = this.model.position.y - this.cameraAngle.y;
         this.camera.position.z = this.model.position.z - this.cameraAngle.z;
@@ -120,10 +127,10 @@ export class CharacterControls {
         this.cameraTarget.z = this.model.position.z
         this.orbitControl.target = this.cameraTarget
 
-        console.log("===============================");
-        console.log(Math.floor(this.model.position.x), Math.floor(this.model.position.y), Math.floor(this.model.position.z), "Char");
-        console.log(Math.floor(this.camera.position.x), Math.floor(this.camera.position.y), Math.floor(this.camera.position.z), "Camera");
-        console.log(Math.floor(this.cameraAngle.x), Math.floor(this.cameraAngle.y), Math.floor(this.cameraAngle.z));
+        // console.log("===============================");
+        // console.log(Math.floor(this.model.position.x), Math.floor(this.model.position.y), Math.floor(this.model.position.z), "Char");
+        // console.log(Math.floor(this.camera.position.x), Math.floor(this.camera.position.y), Math.floor(this.camera.position.z), "Camera");
+        // console.log(Math.floor(this.cameraAngle.x), Math.floor(this.cameraAngle.y), Math.floor(this.cameraAngle.z));
         
     }
 

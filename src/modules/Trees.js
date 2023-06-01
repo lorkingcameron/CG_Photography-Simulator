@@ -18,7 +18,7 @@ export default class Trees {
     }
 
     _buildTrees() {
-        var numTrees = 0;
+        var numTrees = 60;
         var treeScale = 10;
 
         for (var i = 0; i < numTrees; i++) {
@@ -52,10 +52,8 @@ export default class Trees {
     }
 
     _buildTree(pos) {
-        console.log(pos)
         this.gltfLoader.load("../../models/low_poly_tree.glb", (file)=>{
-            var treeScale = 10;
-            console.log(file);
+            var treeScale = 5;
             file.scene.children.forEach(child=> {
                 child.castShadow = true;
                 child.receiveShadow = true;

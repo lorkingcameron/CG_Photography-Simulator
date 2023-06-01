@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import Skybox from '../modules/Skybox.js'
 import {BokehPass} from 'three/addons/postprocessing/BokehPass.js'
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js'
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js'
@@ -13,10 +14,26 @@ export default class Graphics {
         this._buildViewfinderCamera()
         this._buildRenderer();
         this._initPostProcessing();
+        
+
+        this.day_skybox = new Skybox("day");
+        this.day_skybox.name = "day_skybox_entity";
+        this.scene.add(this.day_skybox);
+        console.log("HEY MAN ===> " + this.day_skybox.visible);
+        this.day_skybox.visible = true;
+
+        this.night_skybox = new Skybox("night");
+        this.night_skybox.name = "night_skybox_entity";
+        this.scene.add(this.night_skybox);
+        this.night_skybox.visible = false;
+
+        this.currentSkybox = this.day_skybox;
+        
+
         this._addGUI();
 
-        // this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
-        // this.renderer.setClearColor(this.scene.fog.color);
+        this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
+        this.renderer.setClearColor(this.scene.fog.color);
         // this.scene.background = this.scene.fog.color;
 
         this.cameraLock = false;
@@ -106,18 +123,42 @@ export default class Graphics {
         this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
     }
 
+    _toggleSkyBox() {
+        
+    }
+
     _addGUI() {
         this.effectController = {
             focus: 500.0,
             aperture: 5,
             maxblur: 0.01
         };
+        this.actions = {
+            Toggle_Skybox: () => {
+                if (this.currentSkybox == this.day_skybox) {
+                    this.currentSkybox = this.night_skybox;
+                    this.day_skybox.visible = false;
+                    this.night_skybox.visible = true;
+                } else {
+                    this.currentSkybox = this.day_skybox;
+                    this.day_skybox.visible = true;
+                    this.night_skybox.visible = false;
+                }
+            },
+        }
 
         const gui = new GUI();
-            gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
-            gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
-            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( () => {this._updatePost()} );
-            gui.close();
+
+        const cameraFolder = gui.addFolder("Camera");
+        cameraFolder.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
+        cameraFolder.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
+        cameraFolder.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( () => {this._updatePost()} );
+        cameraFolder.close();
+
+        const skyboxFolder = gui.addFolder("Skybox");
+        skyboxFolder.add(this.actions, "Toggle_Skybox");
+        skyboxFolder.open();
+
     }
 
     _changeCamera(){

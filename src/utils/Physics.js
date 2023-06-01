@@ -33,7 +33,7 @@ export default class Physics {
 
         console.log(CANNON.World);
         var world = new CANNON.World({
-            gravity: new CANNON.Vec3(0, -10, 0) // m/s²
+            gravity: new CANNON.Vec3(0, -30, 0) // m/s²
         });
         this.world = world;
     }

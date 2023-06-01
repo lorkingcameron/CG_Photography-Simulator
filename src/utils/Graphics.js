@@ -19,7 +19,6 @@ export default class Graphics {
         this.day_skybox = new Skybox("day");
         this.day_skybox.name = "day_skybox_entity";
         this.scene.add(this.day_skybox);
-        console.log("HEY MAN ===> " + this.day_skybox.visible);
         this.day_skybox.visible = true;
 
         this.night_skybox = new Skybox("night");

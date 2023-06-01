@@ -40,7 +40,7 @@ export default class Trees {
                         dummy.position.set(dots[i][0]*terrainParams.width/(terrainParams.res - 1) - terrainParams.width/2,
                             data[dots[i][0]][terrainParams.res - dots[i][1] - 1],
                             dots[i][1]*terrainParams.width/(terrainParams.res - 1) - terrainParams.width/2);
-
+                        dummy.rotateZ(Math.random());
                         dummy.updateMatrix();
                         treeInstancedMesh.setMatrixAt(i, dummy.matrix);
                     }

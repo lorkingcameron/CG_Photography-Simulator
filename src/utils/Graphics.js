@@ -193,9 +193,17 @@ export default class Graphics {
         this.renderer.resetState();
 
         if (this.activeCamera === this.camera){
+            var elements = document.querySelectorAll('[id="saveLink"]');
+            elements.forEach((e) => {
+                e.style.display = "initial";
+            })
             this.activeCamera = this.viewfinderCamera;
             this.controls = new FirstPersonControls(this.activeCamera,this.renderer.domElement);
         } else {
+            var elements = document.querySelectorAll('[id="saveLink"]');
+            elements.forEach((e) => {
+                e.style.display = "none";
+            })
             this.activeCamera = this.camera;
             this.controls = this.orbControls;
         }
@@ -266,6 +274,10 @@ export default class Graphics {
         this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
         document.body.appendChild(this.saveLink);
         document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
+        var elements = document.querySelectorAll('[id="saveLink"]');
+        elements.forEach((e) => {
+            e.style.display = "none";
+        })
     }
 
     render() {

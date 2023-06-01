@@ -32,6 +32,13 @@ export default class SceneManager {
         this.cameraModel;
         this.cameraGroup = new THREE.Group();
 
+
+        this.cameraLock;
+
+        this.filterMesh;
+
+        this.filterMaterial;
+
         this.stats = new Stats()
         this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
         document.body.appendChild(this.stats.dom)
@@ -40,6 +47,7 @@ export default class SceneManager {
         this._createCharacter();
 
         this.mousedown = 0;
+
     }
 
     _createObj(){
@@ -53,6 +61,7 @@ export default class SceneManager {
             this.graphics.scene.add(this.cameraGroup);
             this.cameraGroup.add(this.graphics.camera);
             this.cameraGroup.add(this.graphics.viewfinderCamera);
+            this._createFilter();
             file.scene.scale.set(10,10,10);
             file.scene.children.forEach(child=> {
                 child.receiveShadow = true;
@@ -61,6 +70,26 @@ export default class SceneManager {
                 }
             });
         })
+        
+    }
+
+    _createFilter(){
+        this.filterGeometry = new THREE.SphereGeometry(10, 32, 16,0,Math.PI); 
+        this.filterMaterial = new THREE.MeshBasicMaterial(
+            {
+                color: new THREE.Color("#FFCB8E"),
+                transparent: true,
+                opacity: 0.3,
+                side: THREE.DoubleSide
+            }
+        ); 
+        this.filterMesh = new THREE.Mesh(this.filterGeometry, this.filterMaterial);
+        this.filterMesh.visible = false;
+        console.log(this.filterMesh.position);
+        this.filterMesh.position.set(0, 40.3, -5);
+        console.log(this.filterMesh.position);
+        this.graphics.scene.add(this.filterMesh);
+        this.cameraGroup.add(this.filterMesh);
     }
 
     //Add all shapes to the scene
@@ -69,6 +98,7 @@ export default class SceneManager {
         this.physObjCreator._createCube();
         this.physObjCreator._createSphere();
     }
+
 
     _createCharacter() {
         new GLTFLoader().load("../../models/Soldier.glb", (gltf) => {
@@ -88,7 +118,7 @@ export default class SceneManager {
             });
 
             this.characterControls = new CharacterControls(this.graphics.scene, this.physics.world, this.physics.physicsBodies,
-                model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, 'Idle');
+                model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, this.graphics.viewfinderCamera, 'Idle');
         });
     }
 
@@ -97,6 +127,12 @@ export default class SceneManager {
             var name = e.key;
             if (name === "c"){
                 this.graphics._changeCamera();
+                if (this.filterMesh.visible === true ){
+                    this.filterMesh.visible = false;
+                } else {
+                    this.filterMesh.visible = true;
+                }
+                
             }
             if (name === "p"){
                 console.log("Focus Up");
@@ -167,7 +203,22 @@ export default class SceneManager {
                 console.log(this.graphics.cameraLock);
                 
             }
+            if (name === "="){
+                console.log("zoom in");
+                this.graphics._zoomCamera();
+            }
+            if(name === "-"){
+                this.graphics._zoomOutCamera();
+            }
         });
+    }
+
+    _updateFilter(){
+        if(this.filterMaterial != null){
+            this.filterMaterial.color = this.graphics.filterColor;
+            this.filterMaterial.opacity = this.graphics.filterIntensity;
+        }
+
     }
 
     _tick() {
@@ -180,6 +231,7 @@ export default class SceneManager {
 
     render() {
         this._tick();
+        this._updateFilter();
         this.physics.updatePhysics();
         this.graphics.render();
         requestAnimationFrame(this.render.bind(this));

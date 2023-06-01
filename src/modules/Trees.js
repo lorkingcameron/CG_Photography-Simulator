@@ -14,41 +14,67 @@ export default class Trees {
 
         this.placedDots = [] // dots represent trees of coordinates [x, y]
 
-        this._buildTrees();
+        this._buildTrees(scene, terrainParams, data);
     }
 
-    _buildTrees() {
-        var numTrees = 60;
-        var treeScale = 10;
+    _buildTrees(scene, terrainParams, data) {
+        var numTrees = 100;
+        var treeScale = 15;
+        var dots = [];
 
         for (var i = 0; i < numTrees; i++) {
-            this._placeNewDot();
+            dots.push(this._placeNewDot());
         }
-        for (var t = 0; t < this.placedDots.length; t++) {
-            this._buildTree(this.placedDots[t]);
-        }
+        // for (var t = 0; t < this.placedDots.length; t++) {
+        //     this._buildTree(this.placedDots[t]);
+        // }
         // this._buildTree([0,0]);
 
 
 
 
-    //     this.gltfLoader.load("../../models/low_poly_tree.glb", (file)=>{
-    //         file.scene.traverse(function ( child ) {
-	// 			if ( child.isMesh ) {
-	// 				var treeInstancedMesh = new THREE.InstancedMesh( child.geometry, child.material, numTrees );
+        this.gltfLoader.load("../../models/low_poly_tree.glb", (file)=>{
+            file.scene.traverse(function ( child ) {
+                const dummy = new THREE.Object3D();
 
-    //                 for (var i = 0; i < numTrees; i++) {
-                        
-    //                 }
+				if ( child.isMesh ) {
+					var treeInstancedMesh = new THREE.InstancedMesh( child.geometry, child.material, numTrees );
+                    scene.add( treeInstancedMesh );
 
+                    dummy.rotateX(- Math.PI / 2);
+                    for (var i = 0; i < dots.length; i++) {
+                        // Move Tree Instances
+                        dummy.scale.set(treeScale/10, treeScale/10, treeScale/10);
+                        dummy.position.set(dots[i][0]*terrainParams.width/(terrainParams.res - 1) - terrainParams.width/2,
+                            data[dots[i][0]][terrainParams.res - dots[i][1] - 1],
+                            dots[i][1]*terrainParams.width/(terrainParams.res - 1) - terrainParams.width/2);
 
-	// 				// instancedMesh.setMatrixAt( 0, dummy.matrix );
-	// 				scene.add( treeInstancedMesh );
+                        dummy.updateMatrix();
+                        treeInstancedMesh.setMatrixAt(i, dummy.matrix);
+                    }
+				}
+			});
 
-	// 			}
+            file.scene.scale.set(treeScale/7.5, treeScale/2, treeScale/7.5);
+            for (var i = 0; i < this.placedDots.length; i++) {
+                // Build Physics Meshes for Trees
+                var {shape} = threeToCannon(file.scene, {type: ShapeType.CYLINDER})
+                var treeBody = new CANNON.Body({
+                    mass: 0,
+                    material: this.physics.materials.treeMat
+                });
+                treeBody.addShape(shape, {x: 0, y: treeScale, z: 0});
 
-	// 		});
-    //     })
+                treeBody.position.set(this.placedDots[i][0]*this.terrainParams.width/(this.terrainParams.res - 1) - this.terrainParams.width/2,
+                this.data[this.placedDots[i][0]][this.terrainParams.res - this.placedDots[i][1] - 1],
+                this.placedDots[i][1]*this.terrainParams.width/(this.terrainParams.res - 1) - this.terrainParams.width/2);
+
+                this.physics.world.addBody(treeBody);
+                this.physics.physicsBodies.push([treeBody, file.scene]);
+            }
+
+            
+        })
     }
 
     _buildTree(pos) {
@@ -134,5 +160,6 @@ export default class Trees {
     _placeNewDot() {
         var dot = this._generateBestDot();
         this.placedDots.push(dot);
+        return dot;
     }
 }

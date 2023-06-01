@@ -6,7 +6,7 @@ import Physics from '../utils/Physics.js'
 import PhysObjCreator from './PhysObjCreator.js'
 import Lighting from '../utils/Lighting.js'
 import Terrain from './Terrain.js'
-// import { createNoise2D } from 'simplex-noise'
+import Stats from 'stats'
 
 export default class SceneManager {
     constructor() {
@@ -16,7 +16,7 @@ export default class SceneManager {
 
         this.lights = new Lighting(this.graphics.scene, this.graphics.activeCamera);
 
-        this.terrainParams = {width: 300, length: 300, amp: 20, freq: 3, res: 1};
+        this.terrainParams = {width: 300, amp: 15, freq: 15, res: 50};
         this.terrain = new Terrain(this.graphics.scene, this.physics, this.terrainParams);
 
         this._addObjects();
@@ -28,13 +28,17 @@ export default class SceneManager {
         this.cameraGroup = new THREE.Group();
 
         this.cameraLock;
+
+        this.stats = new Stats()
+        this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild(this.stats.dom)
     }
 
     _createObj(){
         const gltfLoader = new GLTFLoader();
         const textureLoader = new TextureLoader();
 
-        gltfLoader.load("../../models/canon_at-1-2.glb", (file)=>{
+        gltfLoader.load("../../models/canon_AT-1-2.glb", (file)=>{
             this.cameraModel = file.scene;
             this.cameraModel.position.set(0,40,0);
             this.cameraGroup.add(this.cameraModel);
@@ -139,9 +143,11 @@ export default class SceneManager {
     }
 
     _tick() {
+        this.stats.begin();
         for(const object of animatedObjects) {
             object.tick();
         }
+        this.stats.end();
     }
 
     render() {

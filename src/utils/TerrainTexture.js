@@ -22,10 +22,10 @@ const colorData = [
 ]
 
 export default class TerrainTexture {
-    constructor(noiseData, width, height) {
+    constructor(noiseData, width) {
       this.noiseData = noiseData;
       this.width = width;
-      this.height = height;
+      this.height = width;
       this.colorData = colorData || [];
   
       this._buildCanvas();

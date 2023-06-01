@@ -15,9 +15,11 @@
         "vite": "^4.2.0"
     },
     "dependencies": {
+        "@nodetoy/three-nodetoy": "^0.1.36",
         "cannon-es": "^0.20.0",
         "cannon-es-debugger": "^1.0.0",
         "noisejs": "^2.1.0",
+        "stats.js": "^0.17.0",
         "three-to-cannon": "^4.3.0"
     }
 }

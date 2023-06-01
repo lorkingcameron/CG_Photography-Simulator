@@ -6,12 +6,12 @@ export default class Physics {
     constructor (scene) {
         this._buildPhysics();
         this._buildContactMaterials();
-        // this._buildDebugger(scene);
+        this._buildDebugger(scene);
     }
 
     updatePhysics(){
         this.world.fixedStep();
-        // this.CannonDebugger.update();
+        this.CannonDebugger.update();
 
         for (var i = 0; i < this.physicsBodies.length; i++) {
             let body = this.physicsBodies[i][0];

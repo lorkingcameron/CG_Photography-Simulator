@@ -2,6 +2,7 @@ import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
 import TerrainTexture from '../utils/TerrainTexture.js'
 import Trees from './Trees.js'
+import Rocks from './Rocks.js'
 
 export default class Terrain {
     constructor(scene, physics, terrainParams) {
@@ -13,6 +14,7 @@ export default class Terrain {
         this._buildWater();
         this._buildMesh(this._buildGeometry(), this._buildMaterial());
         this.trees = new Trees(this.scene, physics, this.data, terrainParams);
+        this.trees = new Rocks(this.scene, physics, this.data, terrainParams);
     }
 
     _buildTerrainData() {

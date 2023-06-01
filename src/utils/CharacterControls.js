@@ -3,10 +3,11 @@ import * as CANNON from 'cannon-es'
 
 export class CharacterControls {
     
-    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, viewfinderCamera, currentAction) {
+    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, viewfinderCamera, currentAction, terrain) {
         this.scene = scene;
         this.world = world;
         this.physicsBodies = physicsBodies;
+        this.terrain = terrain;
 
         this.DIRECTIONS = ['w', 'a', 's', 'd']; // should be constant instead of a property
         this.model = model;
@@ -25,8 +26,8 @@ export class CharacterControls {
 
         // Constants
         this.fadeDuration = 0.2;
-        this.runVelocity = 15;
-        this.walkVelocity = 12;
+        this.runVelocity = 8;
+        this.walkVelocity = 5;
 
         // Variables
         this.walkDir = new THREE.Vector3();
@@ -36,10 +37,11 @@ export class CharacterControls {
 
         this.model.position.set(0, 0, 0);
         this.camera.position.set(0, 2, 7);
-        this.viewfinderCamera.position.set(0,1,0);
+        this.viewfinderCamera.position.set(0,1.8,-0.4);
 
         this._bindCharacter();
-        this.hitbox.position.set(0,25,0); // CHARACTER STARTING POSITION
+        var height = this.terrain.data[this.terrain.res / 2][this.terrain.res / 2];
+        this.hitbox.position.set(0,height + 1,0); // CHARACTER STARTING POSITION
         this._updateCamera();
         console.log("Setup Complete");
     }
@@ -116,9 +118,9 @@ export class CharacterControls {
         this.camera.position.y = this.model.position.y - this.cameraAngle.y;
         this.camera.position.z = this.model.position.z - this.cameraAngle.z;
 
-        this.viewfinderCamera.position.x = this.model.position.x - this.cameraAngle.x;
-        this.viewfinderCamera.position.y = this.model.position.y - this.cameraAngle.y;
-        this.viewfinderCamera.position.z = this.model.position.z - this.cameraAngle.z;
+        this.viewfinderCamera.position.x = this.model.position.x - this.viewfinderAngle.x;
+        this.viewfinderCamera.position.y = this.model.position.y - this.viewfinderAngle.y;
+        this.viewfinderCamera.position.z = this.model.position.z - this.viewfinderAngle.z;
 
         this.cameraTarget.x = this.model.position.x
         this.cameraTarget.y = this.model.position.y + 1

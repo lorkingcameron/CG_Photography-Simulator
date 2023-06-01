@@ -43,16 +43,7 @@ export default class Graphics {
 
         this.camera;
         this.viewfinderCamera;
-        this.saveLink = document.createElement('div');
-        this.saveLink.style.position = 'absolute';
-        this.saveLink.style.bottom = '30px';
-        this.saveLink.style.width = '100%';
-        this.saveLink.style.textAlign = 'center';
-        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
-        document.body.appendChild(this.saveLink);
-        document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
         this.controls;
-
 
         this._buildSaveLink();
     }
@@ -109,8 +100,8 @@ export default class Graphics {
 
         this.orbControls = new OrbitControls(this.camera,this.renderer.domElement);
         this.orbControls.target.set(0, 0, 0);
-        // this.orbControls.enablePan = false;
-        // this.orbControls.enableZoom = false;
+        this.orbControls.enablePan = false;
+        this.orbControls.enableZoom = false;
 
         this.controls = this.orbControls;
         this.controls.update();
@@ -154,7 +145,7 @@ export default class Graphics {
             aperture: 5,
             maxblur: 0.01,
             color: new THREE.Color("#FFCB8E"),
-            intensity: 0.4
+            intensity: 0.7
         };
         this.actions = {
             Toggle_Skybox: () => {
@@ -193,9 +184,17 @@ export default class Graphics {
         this.renderer.resetState();
 
         if (this.activeCamera === this.camera){
+            var elements = document.querySelectorAll('[id="saveLink"]');
+            elements.forEach((e) => {
+                e.style.display = "initial";
+            })
             this.activeCamera = this.viewfinderCamera;
-            this.controls = new FirstPersonControls(this.activeCamera,this.renderer.domElement);
+           
         } else {
+            var elements = document.querySelectorAll('[id="saveLink"]');
+            elements.forEach((e) => {
+                e.style.display = "none";
+            })
             this.activeCamera = this.camera;
             this.controls = this.orbControls;
         }
@@ -227,21 +226,20 @@ export default class Graphics {
     _saveAsImage() {
         this.imgData
         this.imgNode;
-        if(this.activeCamera === this.viewfinderCamera){
-            try {
-                this.strMime = "image/jpeg";
-                this.strDownloadMime = "image/octet-stream";
-                console.log(this.renderer);
-                this.imgData = this.renderer.domElement.toDataURL(this.strMime);
-                console.log(this.renderer.domElement);
-        
-                this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "Photo.jpg");
-        
-            } catch (e) {
-                console.log(e);
-                return;
-            }
+        try {
+            this.strMime = "image/jpeg";
+            this.strDownloadMime = "image/octet-stream";
+            console.log(this.renderer);
+            this.imgData = this.renderer.domElement.toDataURL(this.strMime);
+            console.log(this.renderer.domElement);
+    
+            this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "Photo.jpg");
+    
+        } catch (e) {
+            console.log(e);
+            return;
         }
+        
     }
 
     _saveFile(strData, filename) {
@@ -266,6 +264,10 @@ export default class Graphics {
         this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
         document.body.appendChild(this.saveLink);
         document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
+        var elements = document.querySelectorAll('[id="saveLink"]');
+        elements.forEach((e) => {
+            e.style.display = "none";
+        })
     }
 
     render() {

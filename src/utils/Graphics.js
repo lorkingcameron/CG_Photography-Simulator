@@ -45,14 +45,17 @@ export default class Graphics {
     _buildScene() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x114444 );
+        const axesIndicator = new THREE.AxesHelper(10);
+        this.scene.add(axesIndicator);
     }
 
     _buildCamera() {
         var ratio = window.innerWidth/window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
         this.camera.filmGauge =100.0;
-        this.camera.position.set(0, 40, 0);
-        
+        this.camera.position.set(0,3,-5);
+        this.camera.lookAt(0,0,5);
+    
         this.scene.add(this.camera);
     }
 
@@ -79,10 +82,11 @@ export default class Graphics {
     
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
-        // this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
-        this.controls - new OrbitControls(this.activeCamera, this.renderer.domElement);
-        
-        
+        this.controls = new OrbitControls(this.camera,this.renderer.domElement);
+        this.controls.target.set(0, 0, 0);
+        this.controls.enablePan = false;
+        this.controls.enableZoom = false;
+        this.controls.update();
     }
 
     _initPostProcessing() {
@@ -130,14 +134,14 @@ export default class Graphics {
             this.renderer.resetState();
             this.activeCamera = this.viewfinderCamera;
             this._initPostProcessing();
-            this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+            // this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
             
         } else {
             console.log("change camera");
             this.renderer.resetState();    
             this.activeCamera = this.camera;
             this._initPostProcessing();
-            this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+            // this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
             
 
         }
@@ -183,7 +187,7 @@ export default class Graphics {
 
     render() {
         this.renderer.render(this.scene, this.camera);
-        
+        this.controls.update();
         this.postprocessing.composer.render(0.1);
         // if (this.cameraLock === true){
         //     this.controls.lock()

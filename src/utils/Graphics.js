@@ -5,6 +5,7 @@ import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js'
 import {GUI} from 'three/addons/libs/lil-gui.module.min.js'
 import {OrbitControls} from 'OrbitControls'
 import {PointerLockControls} from 'PointerLockControls'
+import {FirstPersonControls} from 'three/addons/controls/FirstPersonControls.js'
 
 export default class Graphics {
     constructor() {
@@ -72,10 +73,10 @@ export default class Graphics {
     _buildViewfinderCamera() {
         var ratio = window.innerWidth/window.innerHeight;
         this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 0.1, 1000);
-        this.viewfinderCamera.zoom = 0.5;
-        this.viewfinderCamera.position.set(0,41.5,-1);
+        this.viewfinderCamera.zoom = 1;
+        this.viewfinderCamera.position.set(0,40.3,1);
         this.viewfinderCamera.filmGauge =100.0;
-        this.viewfinderCamera.lookAt(0,40,0);
+        this.viewfinderCamera.lookAt(0,40.3,2);
 
         this.scene.add(this.viewfinderCamera);
     }
@@ -102,9 +103,9 @@ export default class Graphics {
 
     _initPostProcessing() {
         this.postprocessing = {};
-        this.renderPass = new RenderPass( this.scene, this.camera );
+        this.renderPass = new RenderPass( this.scene, this.activeCamera );
 
-        this.bokehPass = new BokehPass(this.scene, this.camera, {
+        this.bokehPass = new BokehPass(this.scene, this.activeCamera, {
             focus: 7.0,
             aperture: 0.01,
             maxblur: 0.00
@@ -120,8 +121,8 @@ export default class Graphics {
     }
 
     _updatePost() {
-        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
-        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
+        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus *0.1;
+        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture *0.00001;
         this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
         this.filterColor = this.effectController.color;
         this.filterIntensity = this.effectController.intensity;
@@ -155,7 +156,7 @@ export default class Graphics {
 
         if (this.activeCamera === this.camera){
             this.activeCamera = this.viewfinderCamera;
-            this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+            this.controls = new FirstPersonControls(this.activeCamera,this.renderer.domElement);
         } else {
             this.activeCamera = this.camera;
             this.controls = this.orbControls;
@@ -168,17 +169,17 @@ export default class Graphics {
 
 
     _zoomCamera() {
-        if(this.camera.fov > 10 ){
-            this.camera.fov -= 1;
-            console.log(this.camera.fov);
+        if(this.viewfinderCamera.fov > 10 ){
+            this.viewfinderCamera.fov -= 1;
+            console.log(this.viewfinderCamera.fov);
             this.activeCamera.updateProjectionMatrix();
         }
     }
 
     _zoomOutCamera() {
-        if(this.camera.fov < 100){
-            this.camera.fov += 1;
-            console.log(this.camera.fov);
+        if(this.viewfinderCamera.fov < 100){
+            this.viewfinderCamera.fov += 1;
+            console.log(this.viewfinderCamera.fov);
             this.activeCamera.updateProjectionMatrix();
         }
     }
@@ -188,7 +189,7 @@ export default class Graphics {
     _saveAsImage() {
         this.imgData
         this.imgNode;
-        if(this.activeCamera === this.camera){
+        if(this.activeCamera === this.viewfinderCamera){
             try {
                 this.strMime = "image/jpeg";
                 this.strDownloadMime = "image/octet-stream";

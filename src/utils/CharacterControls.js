@@ -33,19 +33,15 @@ export class CharacterControls {
         this.rotateQuaternion = new THREE.Quaternion();
         this.cameraTarget = new THREE.Vector3();
 
-        this.model.position.set(0, 4, 0);
-        this.camera.position.set(0,9,-5);
-        this._bindCharacter();
+        this.model.position.set(0, 2, 0);
+        this.camera.position.set(0,7,-6);
 
-        this.cameraAngle = new THREE.Vector3(
-            this.model.position.x - this.camera.position.x,
-            this.model.position.y - this.camera.position.y,
-            this.model.position.z - this.camera.position.z,
-        );
+        this._bindCharacter();
+        this._updateCamera();
     }
 
 
-    update(delta, keysPressed) {
+    update(delta, keysPressed, mouseDown) {
         // console.log(keysPressed);
         
         // Get current command
@@ -95,12 +91,15 @@ export class CharacterControls {
 
             // Run/Walk velocity
             const velocity = this.currentAction == 'Run' ? this.runVelocity : this.walkVelocity;
-
             this.hitbox.velocity.x = this.walkDir.x * velocity;
             this.hitbox.velocity.z = this.walkDir.z * velocity;
 
         } else {
             this.hitbox.sleep();
+        }
+
+        if (mouseDown) {
+            this._updateCamera();
         }
 
         // Handle hitbox binding
@@ -118,11 +117,16 @@ export class CharacterControls {
         this.cameraTarget.z = this.model.position.z
         this.orbitControl.target = this.cameraTarget
 
-        // console.log("===============================");
-        // console.log(Math.floor(this.model.position.x), Math.floor(this.model.position.y), Math.floor(this.model.position.z), "Char");
-        // console.log(Math.floor(this.camera.position.x), Math.floor(this.camera.position.y), Math.floor(this.camera.position.z), "Camera");
-        // console.log(Math.floor(this.cameraAngle.x), Math.floor(this.cameraAngle.y), Math.floor(this.cameraAngle.z));
-        
+
+    }
+
+    _updateCamera() {
+        // Update the offset vector that the camera is bound to
+        this.cameraAngle = new THREE.Vector3(
+            this.model.position.x - this.camera.position.x,
+            this.model.position.y - this.camera.position.y,
+            this.model.position.z - this.camera.position.z,
+        );
     }
 
 
@@ -162,7 +166,5 @@ export class CharacterControls {
         sphereBody.position.set(5, 7, 0);
         this.world.addBody(sphereBody);
         this.hitbox = sphereBody;
-
-        // this.physicsBodies.push([sphereBody, this.model]);
     }
 }

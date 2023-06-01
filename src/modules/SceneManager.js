@@ -28,6 +28,8 @@ export default class SceneManager {
 
         this._addObjects();
         this._createCharacter();
+
+        this.mousedown = 0;
     }
 
     _createObj(){
@@ -98,10 +100,17 @@ export default class SceneManager {
             this.keysPressed[event.key.toLowerCase()] = false;
         }, false);
 
+        document.addEventListener("mousedown", (event) => {
+            this.mousedown = 1;
+        });
+        document.addEventListener("mouseup", (event) => {
+            this.mousedown = 0;
+        });
+
         // Update Character
         let mixerUpdateData = this.clock.getDelta();
         if (this.characterControls) {
-            this.characterControls.update(mixerUpdateData, this.keysPressed);
+            this.characterControls.update(mixerUpdateData, this.keysPressed, this.mousedown);
         }
 
     }

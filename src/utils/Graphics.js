@@ -134,7 +134,7 @@ export default class Graphics {
             aperture: 5,
             maxblur: 0.01,
             color: new THREE.Color("#FFCB8E"),
-            intensity: 0.4
+            intensity: 0.7
         };
 
 
@@ -156,7 +156,7 @@ export default class Graphics {
 
         if (this.activeCamera === this.camera){
             this.activeCamera = this.viewfinderCamera;
-            this.controls = new FirstPersonControls(this.activeCamera,this.renderer.domElement);
+           
         } else {
             this.activeCamera = this.camera;
             this.controls = this.orbControls;

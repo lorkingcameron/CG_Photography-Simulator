@@ -36,7 +36,7 @@ export class CharacterControls {
 
         this.model.position.set(0, 0, 0);
         this.camera.position.set(0, 2, 7);
-        this.viewfinderCamera.position.set(0,1,0);
+        this.viewfinderCamera.position.set(0,1.8,-0.4);
 
         this._bindCharacter();
         this.hitbox.position.set(0,25,0); // CHARACTER STARTING POSITION
@@ -116,9 +116,9 @@ export class CharacterControls {
         this.camera.position.y = this.model.position.y - this.cameraAngle.y;
         this.camera.position.z = this.model.position.z - this.cameraAngle.z;
 
-        this.viewfinderCamera.position.x = this.model.position.x - this.cameraAngle.x;
-        this.viewfinderCamera.position.y = this.model.position.y - this.cameraAngle.y;
-        this.viewfinderCamera.position.z = this.model.position.z - this.cameraAngle.z;
+        this.viewfinderCamera.position.x = this.model.position.x - this.viewfinderAngle.x;
+        this.viewfinderCamera.position.y = this.model.position.y - this.viewfinderAngle.y;
+        this.viewfinderCamera.position.z = this.model.position.z - this.viewfinderAngle.z;
 
         this.cameraTarget.x = this.model.position.x
         this.cameraTarget.y = this.model.position.y + 1

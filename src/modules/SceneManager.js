@@ -74,22 +74,22 @@ export default class SceneManager {
     }
 
     _createFilter(){
-        this.filterGeometry = new THREE.SphereGeometry(10, 32, 16,0,Math.PI); 
+        this.filterGeometry = new THREE.SphereGeometry(5, 32, 16); 
         this.filterMaterial = new THREE.MeshBasicMaterial(
             {
                 color: new THREE.Color("#FFCB8E"),
                 transparent: true,
-                opacity: 0.3,
+                opacity: 0.7,
                 side: THREE.DoubleSide
             }
         ); 
         this.filterMesh = new THREE.Mesh(this.filterGeometry, this.filterMaterial);
         this.filterMesh.visible = false;
         console.log(this.filterMesh.position);
-        this.filterMesh.position.set(0, 40.3, -5);
+        this.filterMesh.position.set(0, 25, 0);
         console.log(this.filterMesh.position);
         this.graphics.scene.add(this.filterMesh);
-        this.cameraGroup.add(this.filterMesh);
+        
     }
 
     //Add all shapes to the scene
@@ -126,7 +126,18 @@ export default class SceneManager {
         window.addEventListener("keydown", (e) =>{
             var name = e.key;
             if (name === "c"){
+                this.cameraHRotation = this.graphics.controls.getAzimuthalAngle();
+                this.cameraVRotation = this.graphics.controls.getPolarAngle();
+                this.graphics.viewfinderCamera.rotation.y=this.cameraHRotation + Math.PI;
+                this.graphics.viewfinderCamera.rotation.x=this.cameraVRotation + Math.PI/2;
                 this.graphics._changeCamera();
+                if (this.characterControls.model.visible === true){
+                    this.characterControls.model.visible = false;
+                } else{
+                    this.characterControls.model.visible = true;
+                }
+                
+                
                 if (this.filterMesh.visible === true ){
                     this.filterMesh.visible = false;
                 } else {
@@ -210,10 +221,19 @@ export default class SceneManager {
             if(name === "-"){
                 this.graphics._zoomOutCamera();
             }
+            if(name === "q"){
+                console.log(this.characterControls.model.position);
+            }
+            if(name === "x"){
+                console.log(this.filterMesh.position);
+            }
         });
     }
 
     _updateFilter(){
+        if(this.filterMesh != null){
+           this.filterMesh.position.copy(this.characterControls.hitbox.position);
+        }
         if(this.filterMaterial != null){
             this.filterMaterial.color = this.graphics.filterColor;
             this.filterMaterial.opacity = this.graphics.filterIntensity;
@@ -234,6 +254,8 @@ export default class SceneManager {
         this._updateFilter();
         this.physics.updatePhysics();
         this.graphics.render();
+
+
         requestAnimationFrame(this.render.bind(this));
 
         document.addEventListener('keydown', (event) => {

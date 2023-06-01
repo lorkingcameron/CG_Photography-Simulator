@@ -134,6 +134,7 @@ export default class Graphics {
 
         this._initPostProcessing();
         console.log(this.activeCamera);
+        console.log(this.controls);
     }
 
     _saveAsImage() {
@@ -182,7 +183,9 @@ export default class Graphics {
 
     render() {
         this.renderer.render(this.scene, this.camera);
-        this.controls.update();
+        if (this.controls == this.orbControls) {
+            this.controls.update();
+        }
         this.postprocessing.composer.render(0.1);
     }
 }

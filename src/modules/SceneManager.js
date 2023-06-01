@@ -25,15 +25,12 @@ export default class SceneManager {
         this.terrainParams = {width: 300, amp: 15, freq: 15, res: 50};
         this.terrain = new Terrain(this.graphics.scene, this.physics, this.terrainParams);
 
-        // this._addObjects();
+        this._addObjects();
 
-        // this._controls();
+        this._controls();
 
-        // this.cameraModel;
-
+        this.cameraModel;
         this.cameraGroup = new THREE.Group();
-
-        // this.cameraLock;
 
         this.stats = new Stats()
         this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -69,8 +66,8 @@ export default class SceneManager {
     //Add all shapes to the scene
     _addObjects() {
         this._createObj();
-        // this.physObjCreator._createCube();
-        // this.physObjCreator._createSphere();
+        this.physObjCreator._createCube();
+        this.physObjCreator._createSphere();
     }
 
     _createCharacter() {
@@ -92,6 +89,84 @@ export default class SceneManager {
 
             this.characterControls = new CharacterControls(this.graphics.scene, this.physics.world, this.physics.physicsBodies,
                 model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, 'Idle');
+        });
+    }
+
+    _controls() {
+        window.addEventListener("keydown", (e) =>{
+            var name = e.key;
+            if (name === "c"){
+                this.graphics._changeCamera();
+            }
+            if (name === "p"){
+                console.log("Focus Up");
+                this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value+=10;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
+                this.cameraModel.children.forEach(child=>{
+                    child.children.forEach(child=>{
+                        if(child.name === "#CAM0001_Shutter_Speed"){
+                            child.rotation.y += Math.PI /8;
+                        }
+                    })
+                })
+            }
+            if (name === "l"){
+                console.log("Focus Down");
+                this.graphics.postprocessing.bokeh.uniforms[ 'focus' ].value-=10;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'focus' ]);
+                this.cameraModel.children.forEach(child=>{
+                    child.children.forEach(child=>{
+                        if(child.name === "#CAM0001_Shutter_Speed"){
+                            child.rotation.y -= Math.PI /8;
+                        }
+                    })
+                })
+            }
+            if (name === "o"){
+                console.log("Aperture Up");
+                this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ].value+=0.1;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ]);
+            }
+            if (name === "k"){
+                console.log("Aperture Down");
+                this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ].value-=0.1;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'aperture' ]);
+            }
+            if (name === "i"){
+                console.log("MaxBlur up");
+                this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value+=0.0001;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
+            }
+            if (name === "j"){
+                console.log("MaxBlur down");
+                this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value-=0.0001;
+                console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
+            }
+            // if  (name === "w"){
+            //     console.log("W");
+            //     this.cameraGroup.position.x+=1;
+            // }
+            // if  (name === "s"){
+            //     console.log("S");
+            //     this.cameraGroup.position.x-=1;
+            // }
+            // if  (name === "a"){
+            //     console.log("A");
+            //     this.cameraGroup.position.z+=1;
+            // }
+            // if  (name === "d"){
+            //     console.log("D");
+            //     this.cameraGroup.position.z-=1;
+            // }
+            if (name === "e"){
+                if (this.graphics.cameraLock === true){
+                    this.graphics.cameraLock = false;
+                } else {
+                    this.graphics.cameraLock = true;
+                }
+                console.log(this.graphics.cameraLock);
+                
+            }
         });
     }
 

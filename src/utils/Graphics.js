@@ -154,7 +154,7 @@ export default class Graphics {
             aperture: 5,
             maxblur: 0.01,
             color: new THREE.Color("#FFCB8E"),
-            intensity: 0.4
+            intensity: 0.7
         };
         this.actions = {
             Toggle_Skybox: () => {
@@ -198,7 +198,7 @@ export default class Graphics {
                 e.style.display = "initial";
             })
             this.activeCamera = this.viewfinderCamera;
-            this.controls = new FirstPersonControls(this.activeCamera,this.renderer.domElement);
+           
         } else {
             var elements = document.querySelectorAll('[id="saveLink"]');
             elements.forEach((e) => {

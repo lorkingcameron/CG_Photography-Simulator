@@ -21,15 +21,9 @@ export default class Graphics {
 
         this.cameraLock = false;
         this.activeCamera;
-        this.saveLink = document.createElement('div');
-        this.saveLink.style.position = 'absolute';
-        this.saveLink.style.bottom = '30px';
-        this.saveLink.style.width = '100%';
-        this.saveLink.style.textAlign = 'center';
-        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
-        document.body.appendChild(this.saveLink);
-        document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
+        this.controls;
 
+        this._buildSaveLink();
     }
     
     onWindowResize() {
@@ -39,24 +33,26 @@ export default class Graphics {
         if (window.uniforms.u_resolution !== undefined){
             window.uniforms.u_resolution.value.x = window.innerWidth;
             window.uniforms.u_resolution.value.y = window.innerHeight;
-          }
+        }
     }
 
     _buildScene() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0x114444 );
+        const axesIndicator = new THREE.AxesHelper(10);
+        this.scene.add(axesIndicator);
     }
 
     _buildCamera() {
         var ratio = window.innerWidth/window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
         this.camera.filmGauge =100.0;
-        this.camera.position.set(0, 40, 0);
-        
+        this.camera.position.set(0,0,0);
+    
         this.scene.add(this.camera);
+        this.activeCamera = this.camera;
     }
 
-   
     _buildViewfinderCamera() {
         var ratio = window.innerWidth/window.innerHeight;
         this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
@@ -64,11 +60,8 @@ export default class Graphics {
         this.viewfinderCamera.filmGauge =100.0;
         this.viewfinderCamera.lookAt(0,40,0);
 
-
         this.scene.add(this.viewfinderCamera);
-        this.activeCamera = this.viewfinderCamera;
     }
-    
 
     _buildRenderer() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
@@ -79,20 +72,23 @@ export default class Graphics {
     
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
-        // this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
-        this.controls - new OrbitControls(this.activeCamera, this.renderer.domElement);
-        
-        
+        this.orbControls = new OrbitControls(this.camera,this.renderer.domElement);
+        this.orbControls.target.set(0, 0, 0);
+        this.orbControls.enablePan = false;
+        this.orbControls.enableZoom = false;
+
+        this.controls = this.orbControls;
+        this.controls.update();
     }
 
     _initPostProcessing() {
         this.postprocessing = {};
-        this.renderPass = new RenderPass( this.scene, this.activeCamera );
+        this.renderPass = new RenderPass( this.scene, this.camera );
 
-        this.bokehPass = new BokehPass(this.scene, this.activeCamera, {
+        this.bokehPass = new BokehPass(this.scene, this.camera, {
             focus: 7.0,
             aperture: 0.01,
-            maxblur: 0.001
+            maxblur: 0.00
         } );
 
         this.composer = new EffectComposer( this.renderer );
@@ -105,8 +101,8 @@ export default class Graphics {
     }
 
     _updatePost() {
-        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus *0.1;
-        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture *0.00001;
+        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
+        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
         this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
     }
 
@@ -120,30 +116,26 @@ export default class Graphics {
         const gui = new GUI();
             gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
             gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
-            gui.add( this.effectController, 'maxblur', 0.0, 0.5, 0.001 ).onChange( () => {this._updatePost()} );
+            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( () => {this._updatePost()} );
             gui.close();
     }
 
     _changeCamera(){
+        console.log("change camera");
+        this.renderer.resetState();
+
         if (this.activeCamera === this.camera){
-            console.log("change camera");
-            this.renderer.resetState();
             this.activeCamera = this.viewfinderCamera;
-            this._initPostProcessing();
             this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
-            
         } else {
-            console.log("change camera");
-            this.renderer.resetState();    
             this.activeCamera = this.camera;
-            this._initPostProcessing();
-            this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
-            
-
+            this.controls = this.orbControls;
         }
-        console.log(this.activeCamera);
-    }
 
+        this._initPostProcessing();
+        console.log(this.activeCamera);
+        console.log(this.controls);
+    }
 
     _saveAsImage() {
         this.imgData
@@ -162,7 +154,7 @@ export default class Graphics {
                 console.log(e);
                 return;
             }
-    }
+        }
     }
 
     _saveFile(strData, filename) {
@@ -177,22 +169,23 @@ export default class Graphics {
             location.replace(uri);
         }
     }
-    
 
-
+    _buildSaveLink() {
+        this.saveLink = document.createElement('div');
+        this.saveLink.style.position = 'absolute';
+        this.saveLink.style.bottom = '30px';
+        this.saveLink.style.width = '100%';
+        this.saveLink.style.textAlign = 'center';
+        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
+        document.body.appendChild(this.saveLink);
+        document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
+    }
 
     render() {
         this.renderer.render(this.scene, this.camera);
-        
+        if (this.controls == this.orbControls) {
+            this.controls.update();
+        }
         this.postprocessing.composer.render(0.1);
-        // if (this.cameraLock === true){
-        //     this.controls.lock()
-        // } else if (this.cameraLock===false){
-        //     this.controls.unlock();
-        // }
-
-        // update time uniform
-        window.uniforms.u_time.value = window.clock.getElapsedTime();
-
     }
 }

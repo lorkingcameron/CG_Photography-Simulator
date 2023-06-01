@@ -19,9 +19,23 @@ export default class Graphics {
         // this.renderer.setClearColor(this.scene.fog.color);
         // this.scene.background = this.scene.fog.color;
 
+        this.filterColor;
+
         this.cameraLock = false;
         this.activeCamera;
+
+        this.camera;
+        this.viewfinderCamera;
+        this.saveLink = document.createElement('div');
+        this.saveLink.style.position = 'absolute';
+        this.saveLink.style.bottom = '30px';
+        this.saveLink.style.width = '100%';
+        this.saveLink.style.textAlign = 'center';
+        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
+        document.body.appendChild(this.saveLink);
+        document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
         this.controls;
+
 
         this._buildSaveLink();
     }
@@ -45,8 +59,10 @@ export default class Graphics {
 
     _buildCamera() {
         var ratio = window.innerWidth/window.innerHeight;
-        this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.camera = new THREE.PerspectiveCamera(70, ratio, 0.1, 1000);
+        
         this.camera.filmGauge =100.0;
+
         this.camera.position.set(0,0,0);
     
         this.scene.add(this.camera);
@@ -55,7 +71,8 @@ export default class Graphics {
 
     _buildViewfinderCamera() {
         var ratio = window.innerWidth/window.innerHeight;
-        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 0.1, 1000);
+        this.viewfinderCamera.zoom = 0.5;
         this.viewfinderCamera.position.set(0,41.5,-1);
         this.viewfinderCamera.filmGauge =100.0;
         this.viewfinderCamera.lookAt(0,40,0);
@@ -72,6 +89,7 @@ export default class Graphics {
     
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
+
         this.orbControls = new OrbitControls(this.camera,this.renderer.domElement);
         this.orbControls.target.set(0, 0, 0);
         this.orbControls.enablePan = false;
@@ -79,6 +97,7 @@ export default class Graphics {
 
         this.controls = this.orbControls;
         this.controls.update();
+
     }
 
     _initPostProcessing() {
@@ -104,19 +123,29 @@ export default class Graphics {
         this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
         this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
         this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
+        this.filterColor = this.effectController.color;
+        this.filterIntensity = this.effectController.intensity;
     }
 
     _addGUI() {
         this.effectController = {
             focus: 500.0,
             aperture: 5,
-            maxblur: 0.01
+            maxblur: 0.01,
+            color: new THREE.Color("#FFCB8E"),
+            intensity: 0.4
         };
+
+
 
         const gui = new GUI();
             gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
             gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
-            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( () => {this._updatePost()} );
+            gui.add( this.effectController, 'maxblur', 0.0, 0.5, 0.001 ).onChange( () => {this._updatePost()} );
+            gui.addColor( this.effectController, 'color').onChange( () => {this._updatePost()});
+            gui.add( this.effectController, 'intensity',0,1,0.01).onChange( () => {this._updatePost()});
+
+
             gui.close();
     }
 
@@ -136,6 +165,25 @@ export default class Graphics {
         console.log(this.activeCamera);
         console.log(this.controls);
     }
+
+
+    _zoomCamera() {
+        if(this.camera.fov > 10 ){
+            this.camera.fov -= 1;
+            console.log(this.camera.fov);
+            this.activeCamera.updateProjectionMatrix();
+        }
+    }
+
+    _zoomOutCamera() {
+        if(this.camera.fov < 100){
+            this.camera.fov += 1;
+            console.log(this.camera.fov);
+            this.activeCamera.updateProjectionMatrix();
+        }
+    }
+
+
 
     _saveAsImage() {
         this.imgData
@@ -182,6 +230,7 @@ export default class Graphics {
     }
 
     render() {
+
         this.renderer.render(this.scene, this.camera);
         if (this.controls == this.orbControls) {
             this.controls.update();

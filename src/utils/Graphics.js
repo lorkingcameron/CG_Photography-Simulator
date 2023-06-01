@@ -19,6 +19,8 @@ export default class Graphics {
         this.renderer.setClearColor(this.scene.fog.color);
         this.scene.background = this.scene.fog.color;
 
+        this.filterColor;
+
         this.cameraLock = false;
         this.activeCamera;
         this.camera;
@@ -109,6 +111,8 @@ export default class Graphics {
         this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus *0.1;
         this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture *0.00001;
         this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
+        this.filterColor = this.effectController.color;
+        this.filterIntensity = this.effectController.intensity;
     }
 
     _addGUI() {
@@ -116,13 +120,19 @@ export default class Graphics {
             focus: 500.0,
             aperture: 5,
             maxblur: 0.01,
-            
+            color: new THREE.Color("#FFCB8E"),
+            intensity: 0.4
         };
+
+
 
         const gui = new GUI();
             gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
             gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
             gui.add( this.effectController, 'maxblur', 0.0, 0.5, 0.001 ).onChange( () => {this._updatePost()} );
+            gui.addColor( this.effectController, 'color').onChange( () => {this._updatePost()});
+            gui.add( this.effectController, 'intensity',0,1,0.01).onChange( () => {this._updatePost()});
+
             gui.close();
     }
 

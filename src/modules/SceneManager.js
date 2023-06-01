@@ -30,6 +30,8 @@ export default class SceneManager {
         this.cameraLock;
 
         this.filterMesh;
+
+        this.filterMaterial;
     }
 
     _createObj(){
@@ -69,10 +71,9 @@ export default class SceneManager {
         this.filterMesh.visible = false;
         console.log(this.filterMesh.position);
         this.filterMesh.position.set(0, 40.3, -5);
-        //this.filterMesh.rotateY(Math.PI);
         console.log(this.filterMesh.position);
         this.graphics.scene.add(this.filterMesh);
-        //this.cameraGroup.add(this.filterMesh);
+        this.cameraGroup.add(this.filterMesh);
     }
 
     //Add all shapes to the scene
@@ -176,6 +177,14 @@ export default class SceneManager {
         });
     }
 
+    _updateFilter(){
+        if(this.filterMaterial != null){
+            this.filterMaterial.color = this.graphics.filterColor;
+            this.filterMaterial.opacity = this.graphics.filterIntensity;
+        }
+
+    }
+
     _tick() {
         for(const object of animatedObjects) {
             object.tick();
@@ -184,6 +193,7 @@ export default class SceneManager {
 
     render() {
         this._tick();
+        this._updateFilter();
         this.physics.updatePhysics();
         this.graphics.render();
         requestAnimationFrame(this.render.bind(this));

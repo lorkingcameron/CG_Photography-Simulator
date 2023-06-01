@@ -74,8 +74,8 @@ export default class Graphics {
         target.appendChild(this.renderer.domElement);
         this.orbControls = new OrbitControls(this.camera,this.renderer.domElement);
         this.orbControls.target.set(0, 0, 0);
-        this.orbControls.enablePan = false;
-        this.orbControls.enableZoom = false;
+        // this.orbControls.enablePan = false;
+        // this.orbControls.enableZoom = false;
 
         this.controls = this.orbControls;
         this.controls.update();

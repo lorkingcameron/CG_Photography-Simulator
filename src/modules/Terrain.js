@@ -2,10 +2,6 @@ import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
 import TerrainTexture from '../utils/TerrainTexture.js'
 import Trees from './Trees.js'
-import waterFrag from '../shaders/water.frag.js'
-import waterVert from '../shaders/water.vert.js'
-import { NodeToyMaterial } from 'three-nodetoy';
-import { data } from '../shaders/shaderData.js';
 
 export default class Terrain {
     constructor(scene, physics, terrainParams) {
@@ -15,9 +11,8 @@ export default class Terrain {
         this._buildTerrainData();
         this._createGroundPlane(physics);
         this._buildWater();
-        // this._buildWaterShader();
         this._buildMesh(this._buildGeometry(), this._buildMaterial());
-        this.tree = new Trees(this.scene, physics, this.data, terrainParams);
+        this.trees = new Trees(this.scene, physics, this.data, terrainParams);
     }
 
     _buildTerrainData() {
@@ -149,38 +144,6 @@ export default class Terrain {
         }
         animatedObjects.push(this.water);
     
-        let deepWaterGeometry = new THREE.PlaneGeometry(300, 300, 1, 1);
-        deepWaterGeometry.rotateX(-Math.PI * 0.5);
-        let deepWaterMaterial = new THREE.MeshLambertMaterial({
-          color: 0x1c82c8, opacity: 0.8
-        });
-        deepWaterMaterial.transparent = true;
-    
-        this.deepWater = new THREE.Mesh(deepWaterGeometry, deepWaterMaterial);    
-    
-        this.deepWater.receiveShadow = true;
-        this.deepWater.castShadow = true;
-        this.deepWater.position.y = this.waterLevel - (7/16 * this.waveHeight + 0.0225);
-    
         this.scene.add(this.water);
-        // this.scene.add(this.deepWater);
-    }
-
-    _buildWaterShader() {
-        // var material = new THREE.ShaderMaterial({
-        //     uniforms: window.uniforms,
-        //     vertexShader: waterVert,
-        //     fragmentShader: waterFrag
-        // });
-        var material = new NodeToyMaterial({data});
-        window.animatedObjects.push(NodeToyMaterial);
-
-        let geometry = new THREE.PlaneBufferGeometry(300, 300, 50, 50);
-        geometry.rotateX(-Math.PI * 0.5);
-        
-        var water = new THREE.Mesh(
-            geometry, material
-        );
-        this.scene.add(water);
     }
 }

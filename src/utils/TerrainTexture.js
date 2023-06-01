@@ -5,11 +5,11 @@ const colorData = [
     },
     {
       max: 12,
-      color: [75, 186, 80]
+      color: [26, 117, 23]
     },
     {
       max: 16,
-      color: [68, 178, 72]
+      color: [63, 168, 3]
     },
     {
       max: 18,

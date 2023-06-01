@@ -1,4 +1,3 @@
-import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js'
 import * as CANNON from 'cannon-es'
 import * as THREE from 'three'
 import { threeToCannon, ShapeType } from 'three-to-cannon'
@@ -19,19 +18,12 @@ export default class Trees {
 
     _buildTrees(scene, terrainParams, data) {
         var numTrees = 100;
-        var treeScale = 15;
+        var treeScale = 10;
         var dots = [];
 
         for (var i = 0; i < numTrees; i++) {
             dots.push(this._placeNewDot());
         }
-        // for (var t = 0; t < this.placedDots.length; t++) {
-        //     this._buildTree(this.placedDots[t]);
-        // }
-        // this._buildTree([0,0]);
-
-
-
 
         this.gltfLoader.load("../../models/low_poly_tree.glb", (file)=>{
             file.scene.traverse(function ( child ) {
@@ -72,39 +64,6 @@ export default class Trees {
                 this.physics.world.addBody(treeBody);
                 this.physics.physicsBodies.push([treeBody, file.scene]);
             }
-
-            
-        })
-    }
-
-    _buildTree(pos) {
-        console.log(pos)
-        this.gltfLoader.load("../../models/low_poly_tree.glb", (file)=>{
-            var treeScale = 10;
-            console.log(file);
-            file.scene.children.forEach(child=> {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            });
-
-            file.scene.scale.set(treeScale/5, treeScale/2, treeScale/5);
-
-            var {shape} = threeToCannon(file.scene,  {type: ShapeType.CYLINDER})
-            var treeBody = new CANNON.Body({
-                mass: 0,
-                material: this.physics.materials.treeMat
-            });
-            treeBody.addShape(shape, {x: 0, y: treeScale, z: 0});
-
-            treeBody.position.set(pos[0]*this.terrainParams.width/(this.terrainParams.res - 1) - this.terrainParams.width/2,
-                this.data[pos[0]][this.terrainParams.res - pos[1] - 1],
-                pos[1]*this.terrainParams.width/(this.terrainParams.res - 1) - this.terrainParams.width/2);
-
-            file.scene.scale.set(treeScale, treeScale, treeScale);
-
-            this.scene.add(file.scene);
-            this.physics.world.addBody(treeBody);
-            this.physics.physicsBodies.push([treeBody, file.scene]);
         })
     }
 

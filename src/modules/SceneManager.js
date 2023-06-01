@@ -128,7 +128,7 @@ export default class SceneManager {
             if (name === "c"){
                 this.cameraHRotation = this.graphics.controls.getAzimuthalAngle();
                 this.cameraVRotation = this.graphics.controls.getPolarAngle();
-                this.graphics.viewfinderCamera.rotation.y=this.cameraHRotation + Math.PI;
+                this.graphics.viewfinderCamera.rotation.y=this.cameraHRotation - Math.PI;
                 this.graphics.viewfinderCamera.rotation.x=this.cameraVRotation + Math.PI/2;
                 this.graphics._changeCamera();
                 if (this.characterControls.model.visible === true){

@@ -26,8 +26,8 @@ export class CharacterControls {
 
         // Constants
         this.fadeDuration = 0.2;
-        this.runVelocity = 15;
-        this.walkVelocity = 12;
+        this.runVelocity = 8;
+        this.walkVelocity = 5;
 
         // Variables
         this.walkDir = new THREE.Vector3();

@@ -109,8 +109,8 @@ export default class Graphics {
 
         this.orbControls = new OrbitControls(this.camera,this.renderer.domElement);
         this.orbControls.target.set(0, 0, 0);
-        // this.orbControls.enablePan = false;
-        // this.orbControls.enableZoom = false;
+        this.orbControls.enablePan = false;
+        this.orbControls.enableZoom = false;
 
         this.controls = this.orbControls;
         this.controls.update();
@@ -235,21 +235,20 @@ export default class Graphics {
     _saveAsImage() {
         this.imgData
         this.imgNode;
-        if(this.activeCamera === this.viewfinderCamera){
-            try {
-                this.strMime = "image/jpeg";
-                this.strDownloadMime = "image/octet-stream";
-                console.log(this.renderer);
-                this.imgData = this.renderer.domElement.toDataURL(this.strMime);
-                console.log(this.renderer.domElement);
-        
-                this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "Photo.jpg");
-        
-            } catch (e) {
-                console.log(e);
-                return;
-            }
+        try {
+            this.strMime = "image/jpeg";
+            this.strDownloadMime = "image/octet-stream";
+            console.log(this.renderer);
+            this.imgData = this.renderer.domElement.toDataURL(this.strMime);
+            console.log(this.renderer.domElement);
+    
+            this._saveFile(this.imgData.replace(this.strMime, this.strDownloadMime), "Photo.jpg");
+    
+        } catch (e) {
+            console.log(e);
+            return;
         }
+        
     }
 
     _saveFile(strData, filename) {

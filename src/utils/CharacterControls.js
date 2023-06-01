@@ -33,17 +33,18 @@ export class CharacterControls {
         this.rotateQuaternion = new THREE.Quaternion();
         this.cameraTarget = new THREE.Vector3();
 
-        this.model.position.set(0, 12, 0);
-        this.camera.position.set(0,17,-6);
+        this.model.position.set(0, 0, 0);
+        this.camera.position.set(0, 2, 7);
 
         this._bindCharacter();
+        this.hitbox.position.set(0,25,0); // CHARACTER STARTING POSITION
         this._updateCamera();
         console.log("Setup Complete");
     }
 
 
     update(delta, keysPressed, mouseDown) {
-        // console.log(keysPressed);
+        // console.log(this.hitbox.position);
         
         // Get current command
         const directionPressed = this.DIRECTIONS.some(key => keysPressed[key] == true);
@@ -164,7 +165,7 @@ export class CharacterControls {
             mass: 500,
             shape: new CANNON.Sphere(1),
         });
-        sphereBody.position.set(5, 7, 0);
+        sphereBody.position.set(0, 0, 0);
         this.world.addBody(sphereBody);
         this.hitbox = sphereBody;
     }

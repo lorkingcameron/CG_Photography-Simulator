@@ -18,28 +18,28 @@ export default class SceneManager {
         this.graphics = new Graphics();
 
         this.physics = new Physics(this.graphics.scene);
+        this.physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
 
-        this.lights = new Lighting(this.graphics.scene, this.graphics.activeCamera);
+        this.lights = new Lighting(this.graphics.scene, this.graphics.camera);
 
         this.terrainParams = {width: 300, amp: 15, freq: 15, res: 50};
         this.terrain = new Terrain(this.graphics.scene, this.physics, this.terrainParams);
 
-        this._addObjects();
+        // this._addObjects();
 
         // this._controls();
 
-        this.cameraModel;
+        // this.cameraModel;
 
         this.cameraGroup = new THREE.Group();
 
-        this.cameraLock;
+        // this.cameraLock;
 
         this.stats = new Stats()
         this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
         document.body.appendChild(this.stats.dom)
-        this.physObjCreator = new PhysObjCreator(this.graphics.scene, this.physics.world, this.physics.physicsBodies);
+        
 
-        this._addObjects();
         this._createCharacter();
 
         this.mousedown = 0;

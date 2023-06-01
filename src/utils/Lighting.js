@@ -26,6 +26,6 @@ export default class Lighting {
     _createCameraLight(camera) {
         this.cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 20,10);
         this.cameralight.castShadow = true;
-        camera.add(this.cameralight);
+        // camera.add(this.cameralight);
     }
 }

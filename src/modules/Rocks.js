@@ -46,9 +46,9 @@ export default class Rocks {
             // dummy.rotateX(- Math.PI / 2);
             for (var i = 0; i < dots.length; i++) {
                 // Move Tree Instances
-                dummy.scale.set(rockScale/10 * (Math.random() * 4 + 1), rockScale/10* (Math.random() * 4 + 1), rockScale/10* (Math.random() * 4 + 1));
+                dummy.scale.set(rockScale/10 * (Math.random() * 4 + 1), rockScale/10* (Math.random() * 6 + 1), rockScale/10* (Math.random() * 4 + 1));
                 dummy.position.set(dots[i][0]*terrainParams.width/(terrainParams.res - 1) - terrainParams.width/2,
-                    data[dots[i][0]][terrainParams.res - dots[i][1] - 1] + Math.random() / 3,
+                    data[dots[i][0]][terrainParams.res - dots[i][1] - 1] + Math.random() / 4,
                     dots[i][1]*terrainParams.width/(terrainParams.res - 1) - terrainParams.width/2);
 
                 dummy.updateMatrix();

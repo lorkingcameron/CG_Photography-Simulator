@@ -3,7 +3,7 @@ import * as CANNON from 'cannon-es'
 
 export class CharacterControls {
     
-    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, currentAction) {
+    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, viewfinderCamera, currentAction) {
         this.scene = scene;
         this.world = world;
         this.physicsBodies = physicsBodies;
@@ -13,6 +13,7 @@ export class CharacterControls {
         this.mixer = mixer;
         this.orbitControl = orbitControl;
         this.camera = camera;
+        this.viewfinderCamera = viewfinderCamera;
         this.currentAction = currentAction;
 
         this.animationsMap = animationsMap;
@@ -24,8 +25,8 @@ export class CharacterControls {
 
         // Constants
         this.fadeDuration = 0.2;
-        this.runVelocity = 5;
-        this.walkVelocity = 2;
+        this.runVelocity = 15;
+        this.walkVelocity = 12;
 
         // Variables
         this.walkDir = new THREE.Vector3();
@@ -35,6 +36,7 @@ export class CharacterControls {
 
         this.model.position.set(0, 0, 0);
         this.camera.position.set(0, 2, 7);
+        this.viewfinderCamera.position.set(0,1,0);
 
         this._bindCharacter();
         this.hitbox.position.set(0,25,0); // CHARACTER STARTING POSITION
@@ -114,6 +116,10 @@ export class CharacterControls {
         this.camera.position.y = this.model.position.y - this.cameraAngle.y;
         this.camera.position.z = this.model.position.z - this.cameraAngle.z;
 
+        this.viewfinderCamera.position.x = this.model.position.x - this.cameraAngle.x;
+        this.viewfinderCamera.position.y = this.model.position.y - this.cameraAngle.y;
+        this.viewfinderCamera.position.z = this.model.position.z - this.cameraAngle.z;
+
         this.cameraTarget.x = this.model.position.x
         this.cameraTarget.y = this.model.position.y + 1
         this.cameraTarget.z = this.model.position.z
@@ -128,6 +134,11 @@ export class CharacterControls {
             this.model.position.x - this.camera.position.x,
             this.model.position.y - this.camera.position.y,
             this.model.position.z - this.camera.position.z,
+        );
+        this.viewfinderAngle = new THREE.Vector3(
+            this.model.position.x - this.viewfinderCamera.position.x,
+            this.model.position.y - this.viewfinderCamera.position.y,
+            this.model.position.z - this.viewfinderCamera.position.z,
         );
     }
 

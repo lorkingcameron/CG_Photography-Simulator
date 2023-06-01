@@ -1,10 +1,12 @@
 import * as THREE from 'three'
+import Skybox from '../modules/Skybox.js'
 import {BokehPass} from 'three/addons/postprocessing/BokehPass.js'
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js'
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js'
 import {GUI} from 'three/addons/libs/lil-gui.module.min.js'
 import {OrbitControls} from 'OrbitControls'
 import {PointerLockControls} from 'PointerLockControls'
+import {FirstPersonControls} from 'three/addons/controls/FirstPersonControls.js'
 
 export default class Graphics {
     constructor() {
@@ -13,15 +15,44 @@ export default class Graphics {
         this._buildViewfinderCamera()
         this._buildRenderer();
         this._initPostProcessing();
+        
+
+        this.day_skybox = new Skybox("day");
+        this.day_skybox.name = "day_skybox_entity";
+        this.scene.add(this.day_skybox);
+        this.day_skybox.visible = true;
+
+        this.night_skybox = new Skybox("night");
+        this.night_skybox.name = "night_skybox_entity";
+        this.scene.add(this.night_skybox);
+        this.night_skybox.visible = false;
+
+        this.currentSkybox = this.day_skybox;
+        
+
         this._addGUI();
 
-        // this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
-        // this.renderer.setClearColor(this.scene.fog.color);
+        this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
+        this.renderer.setClearColor(this.scene.fog.color);
         // this.scene.background = this.scene.fog.color;
+
+        this.filterColor;
 
         this.cameraLock = false;
         this.activeCamera;
+
+        this.camera;
+        this.viewfinderCamera;
+        this.saveLink = document.createElement('div');
+        this.saveLink.style.position = 'absolute';
+        this.saveLink.style.bottom = '30px';
+        this.saveLink.style.width = '100%';
+        this.saveLink.style.textAlign = 'center';
+        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
+        document.body.appendChild(this.saveLink);
+        document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
         this.controls;
+
 
         this._buildSaveLink();
     }
@@ -45,8 +76,10 @@ export default class Graphics {
 
     _buildCamera() {
         var ratio = window.innerWidth/window.innerHeight;
-        this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.camera = new THREE.PerspectiveCamera(70, ratio, 0.1, 1000);
+        
         this.camera.filmGauge =100.0;
+
         this.camera.position.set(0,0,0);
     
         this.scene.add(this.camera);
@@ -55,10 +88,11 @@ export default class Graphics {
 
     _buildViewfinderCamera() {
         var ratio = window.innerWidth/window.innerHeight;
-        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
-        this.viewfinderCamera.position.set(0,41.5,-1);
+        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 0.1, 1000);
+        this.viewfinderCamera.zoom = 1;
+        this.viewfinderCamera.position.set(0,40.3,1);
         this.viewfinderCamera.filmGauge =100.0;
-        this.viewfinderCamera.lookAt(0,40,0);
+        this.viewfinderCamera.lookAt(0,40.3,2);
 
         this.scene.add(this.viewfinderCamera);
     }
@@ -72,6 +106,7 @@ export default class Graphics {
     
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
+
         this.orbControls = new OrbitControls(this.camera,this.renderer.domElement);
         this.orbControls.target.set(0, 0, 0);
         // this.orbControls.enablePan = false;
@@ -79,13 +114,14 @@ export default class Graphics {
 
         this.controls = this.orbControls;
         this.controls.update();
+
     }
 
     _initPostProcessing() {
         this.postprocessing = {};
-        this.renderPass = new RenderPass( this.scene, this.camera );
+        this.renderPass = new RenderPass( this.scene, this.activeCamera );
 
-        this.bokehPass = new BokehPass(this.scene, this.camera, {
+        this.bokehPass = new BokehPass(this.scene, this.activeCamera, {
             focus: 7.0,
             aperture: 0.01,
             maxblur: 0.00
@@ -101,23 +137,55 @@ export default class Graphics {
     }
 
     _updatePost() {
-        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus;
-        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture;
+        this.postprocessing.bokeh.uniforms[ 'focus' ].value = this.effectController.focus *0.1;
+        this.postprocessing.bokeh.uniforms[ 'aperture' ].value = this.effectController.aperture *0.00001;
         this.postprocessing.bokeh.uniforms[ 'maxblur' ].value = this.effectController.maxblur;
+        this.filterColor = this.effectController.color;
+        this.filterIntensity = this.effectController.intensity;
+    }
+
+    _toggleSkyBox() {
+        
     }
 
     _addGUI() {
         this.effectController = {
             focus: 500.0,
             aperture: 5,
-            maxblur: 0.01
+            maxblur: 0.01,
+            color: new THREE.Color("#FFCB8E"),
+            intensity: 0.4
         };
+        this.actions = {
+            Toggle_Skybox: () => {
+                if (this.currentSkybox == this.day_skybox) {
+                    this.currentSkybox = this.night_skybox;
+                    this.day_skybox.visible = false;
+                    this.night_skybox.visible = true;
+                } else {
+                    this.currentSkybox = this.day_skybox;
+                    this.day_skybox.visible = true;
+                    this.night_skybox.visible = false;
+                }
+            },
+        }
+
+
 
         const gui = new GUI();
-            gui.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
-            gui.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
-            gui.add( this.effectController, 'maxblur', 0.0, 0.01, 0.001 ).onChange( () => {this._updatePost()} );
-            gui.close();
+
+        const cameraFolder = gui.addFolder("Camera");
+        cameraFolder.add( this.effectController, 'focus', 10.0, 3000.0, 10 ).onChange( () => {this._updatePost()} );
+        cameraFolder.add( this.effectController, 'aperture', 0, 10, 0.1 ).onChange( () => {this._updatePost()}  );
+        cameraFolder.add( this.effectController, 'maxblur', 0.0, 0.5, 0.001 ).onChange( () => {this._updatePost()} );
+        cameraFolder.addColor( this.effectController, 'color').onChange( () => {this._updatePost()});
+        cameraFolder.add( this.effectController, 'intensity',0,1,0.01).onChange( () => {this._updatePost()});
+        cameraFolder.close();
+
+        const skyboxFolder = gui.addFolder("Skybox");
+        skyboxFolder.add(this.actions, "Toggle_Skybox");
+        skyboxFolder.open();
+
     }
 
     _changeCamera(){
@@ -126,7 +194,7 @@ export default class Graphics {
 
         if (this.activeCamera === this.camera){
             this.activeCamera = this.viewfinderCamera;
-            this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+            this.controls = new FirstPersonControls(this.activeCamera,this.renderer.domElement);
         } else {
             this.activeCamera = this.camera;
             this.controls = this.orbControls;
@@ -137,10 +205,29 @@ export default class Graphics {
         console.log(this.controls);
     }
 
+
+    _zoomCamera() {
+        if(this.viewfinderCamera.fov > 10 ){
+            this.viewfinderCamera.fov -= 1;
+            console.log(this.viewfinderCamera.fov);
+            this.activeCamera.updateProjectionMatrix();
+        }
+    }
+
+    _zoomOutCamera() {
+        if(this.viewfinderCamera.fov < 100){
+            this.viewfinderCamera.fov += 1;
+            console.log(this.viewfinderCamera.fov);
+            this.activeCamera.updateProjectionMatrix();
+        }
+    }
+
+
+
     _saveAsImage() {
         this.imgData
         this.imgNode;
-        if(this.activeCamera === this.camera){
+        if(this.activeCamera === this.viewfinderCamera){
             try {
                 this.strMime = "image/jpeg";
                 this.strDownloadMime = "image/octet-stream";
@@ -182,6 +269,7 @@ export default class Graphics {
     }
 
     render() {
+
         this.renderer.render(this.scene, this.camera);
         if (this.controls == this.orbControls) {
             this.controls.update();

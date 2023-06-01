@@ -21,6 +21,8 @@ export default class Graphics {
 
         this.cameraLock = false;
         this.activeCamera;
+        this.camera;
+        this.viewfinderCamera;
         this.saveLink = document.createElement('div');
         this.saveLink.style.position = 'absolute';
         this.saveLink.style.bottom = '30px';
@@ -45,9 +47,10 @@ export default class Graphics {
 
     _buildCamera() {
         var ratio = window.innerWidth/window.innerHeight;
-        this.camera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.camera = new THREE.PerspectiveCamera(70, ratio, 0.1, 1000);
+        
         this.camera.filmGauge =100.0;
-        this.camera.position.set(0, 40, 0);
+        this.camera.position.set(0, 40.3, 1);
         
         this.scene.add(this.camera);
     }
@@ -55,7 +58,8 @@ export default class Graphics {
    
     _buildViewfinderCamera() {
         var ratio = window.innerWidth/window.innerHeight;
-        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 1, 1000);
+        this.viewfinderCamera = new THREE.PerspectiveCamera(70, ratio, 0.1, 1000);
+        this.viewfinderCamera.zoom = 0.5;
         this.viewfinderCamera.position.set(0,41.5,-1);
         this.viewfinderCamera.filmGauge =100.0;
         this.viewfinderCamera.lookAt(0,40,0);
@@ -76,6 +80,8 @@ export default class Graphics {
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
         this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+        this.controls.maxPolarAngle = Math.PI * 3/4;
+        this.controls.minPolarAngle = Math.PI * 1/4;
         
         
     }
@@ -109,7 +115,8 @@ export default class Graphics {
         this.effectController = {
             focus: 500.0,
             aperture: 5,
-            maxblur: 0.01
+            maxblur: 0.01,
+            
         };
 
         const gui = new GUI();
@@ -137,6 +144,22 @@ export default class Graphics {
 
         }
         console.log(this.activeCamera);
+    }
+
+    _zoomCamera() {
+        if(this.camera.fov > 10 ){
+            this.camera.fov -= 1;
+            console.log(this.camera.fov);
+            this.activeCamera.updateProjectionMatrix();
+        }
+    }
+
+    _zoomOutCamera() {
+        if(this.camera.fov < 100){
+            this.camera.fov += 1;
+            console.log(this.camera.fov);
+            this.activeCamera.updateProjectionMatrix();
+        }
     }
 
 
@@ -177,7 +200,7 @@ export default class Graphics {
 
 
     render() {
-        this.renderer.render(this.scene, this.camera);
+        this.renderer.render(this.scene, this.activeCamera);
         
         this.postprocessing.composer.render(0.1);
         if (this.cameraLock === true){

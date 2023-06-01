@@ -14,7 +14,7 @@ export default class PhysObjCreator {
             mass: 500,
             shape: new CANNON.Sphere(1),
         });
-        sphereBody.position.set(0, 50, 0);
+        sphereBody.position.set(10, 30, 10);
         this.world.addBody(sphereBody);
 
         const sphereGeometry = new THREE.SphereGeometry();
@@ -30,7 +30,7 @@ export default class PhysObjCreator {
             mass: 5,
             shape: new CANNON.Box(new CANNON.Vec3(1,1,1)),
         });
-        boxBody.position.set(1, 50, 0);
+        boxBody.position.set(-10, 30, -10);
         this.world.addBody(boxBody);
 
         const boxGeometry = new THREE.BoxGeometry(2,2,2);

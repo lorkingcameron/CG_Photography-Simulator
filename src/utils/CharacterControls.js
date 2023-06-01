@@ -35,7 +35,6 @@ export class CharacterControls {
 
         this.model.position.set(0, 4, 0);
         this.camera.position.set(0,9,-5);
-        this._updateCameraTarget(0,0);
         this._bindCharacter();
 
         this.cameraAngle = new THREE.Vector3(
@@ -47,8 +46,8 @@ export class CharacterControls {
 
 
     update(delta, keysPressed) {
+        // console.log(keysPressed);
         
-
         // Get current command
         const directionPressed = this.DIRECTIONS.some(key => keysPressed[key] == true);
         var play = '';
@@ -75,7 +74,8 @@ export class CharacterControls {
         this.mixer.update(delta);
 
         if (this.currentAction == 'Run' || this.currentAction == 'Walk') {
-            // this.hitbox.mass = 500;
+            this.hitbox.wakeUp();
+
             // Find angle toward camera direction
             var angleYCameraDirection = Math.atan2(
                 (this.camera.position.x - this.model.position.x),
@@ -96,20 +96,11 @@ export class CharacterControls {
             // Run/Walk velocity
             const velocity = this.currentAction == 'Run' ? this.runVelocity : this.walkVelocity;
 
-            // Move the model & camera (TODO SHOULD BE DONE WITH PHYSICS)
-            // const moveX = this.walkDir.x * velocity * delta;
-            // const moveZ = this.walkDir.z * velocity * delta;
-            // this.model.position.x += moveX;
-            // this.model.position.z += moveZ;
-            // this._updateCameraTarget(moveX, moveZ);
-
             this.hitbox.velocity.x = this.walkDir.x * velocity;
             this.hitbox.velocity.z = this.walkDir.z * velocity;
+
         } else {
-            // this.hitbox.mass = 0;
-            this.hitbox.velocity.x = 0;
-            this.hitbox.velocity.y = 0;
-            this.hitbox.velocity.z = 0;
+            this.hitbox.sleep();
         }
 
         // Handle hitbox binding
@@ -134,17 +125,6 @@ export class CharacterControls {
         
     }
 
-    _updateCameraTarget(moveX, moveZ) {
-        // move camera
-        this.camera.position.x += moveX
-        this.camera.position.z += moveZ
-
-        // update camera target
-        this.cameraTarget.x = this.model.position.x
-        this.cameraTarget.y = this.model.position.y + 1
-        this.cameraTarget.z = this.model.position.z
-        this.orbitControl.target = this.cameraTarget
-    }
 
     _directionOffset(keysPressed) {
         var directionOffset = 0 // For w key

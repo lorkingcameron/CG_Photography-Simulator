@@ -43,16 +43,7 @@ export default class Graphics {
 
         this.camera;
         this.viewfinderCamera;
-        this.saveLink = document.createElement('div');
-        this.saveLink.style.position = 'absolute';
-        this.saveLink.style.bottom = '30px';
-        this.saveLink.style.width = '100%';
-        this.saveLink.style.textAlign = 'center';
-        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
-        document.body.appendChild(this.saveLink);
-        document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
         this.controls;
-
 
         this._buildSaveLink();
     }

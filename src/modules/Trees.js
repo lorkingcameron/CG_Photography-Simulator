@@ -18,33 +18,63 @@ export default class Trees {
     }
 
     _buildTrees() {
-        var numTrees = 20;
+        var numTrees = 0;
+        var treeScale = 10;
 
         for (var i = 0; i < numTrees; i++) {
             this._placeNewDot();
         }
         for (var t = 0; t < this.placedDots.length; t++) {
             this._buildTree(this.placedDots[t]);
-            console.log(this.placedDots[t]);
         }
+        // this._buildTree([0,0]);
 
+
+
+
+    //     this.gltfLoader.load("../../models/low_poly_tree.glb", (file)=>{
+    //         file.scene.traverse(function ( child ) {
+	// 			if ( child.isMesh ) {
+	// 				var treeInstancedMesh = new THREE.InstancedMesh( child.geometry, child.material, numTrees );
+
+    //                 for (var i = 0; i < numTrees; i++) {
+                        
+    //                 }
+
+
+	// 				// instancedMesh.setMatrixAt( 0, dummy.matrix );
+	// 				scene.add( treeInstancedMesh );
+
+	// 			}
+
+	// 		});
+    //     })
     }
 
     _buildTree(pos) {
+        console.log(pos)
         this.gltfLoader.load("../../models/low_poly_tree.glb", (file)=>{
-            file.scene.scale.set(1, 1, 1);
+            var treeScale = 10;
+            console.log(file);
             file.scene.children.forEach(child=> {
                 child.castShadow = true;
                 child.receiveShadow = true;
             });
 
-            var {shape, offset, quaternion} = threeToCannon(file.scene,  {type: ShapeType.BOX})
+            file.scene.scale.set(treeScale/5, treeScale/2, treeScale/5);
+
+            var {shape} = threeToCannon(file.scene,  {type: ShapeType.CYLINDER})
             var treeBody = new CANNON.Body({
                 mass: 0,
                 material: this.physics.materials.treeMat
             });
-            treeBody.addShape(shape, offset)
-            treeBody.position.set(pos[0] - this.terrainParams.width/2, this.data[pos[0]][this.terrainParams.length/this.terrainParams.res - pos[1]], pos[1] - this.terrainParams.length/2);
+            treeBody.addShape(shape, {x: 0, y: treeScale, z: 0});
+
+            treeBody.position.set(pos[0]*this.terrainParams.width/(this.terrainParams.res - 1) - this.terrainParams.width/2,
+                this.data[pos[0]][this.terrainParams.res - pos[1] - 1],
+                pos[1]*this.terrainParams.width/(this.terrainParams.res - 1) - this.terrainParams.width/2);
+
+            file.scene.scale.set(treeScale, treeScale, treeScale);
 
             this.scene.add(file.scene);
             this.physics.world.addBody(treeBody);
@@ -54,8 +84,8 @@ export default class Trees {
 
     _generateRandomPosition() {
         return [
-        Math.round(Math.random() * this.terrainParams.width / 2 + this.terrainParams.width / 4),
-        Math.round(Math.random() * this.terrainParams.length / 2 + this.terrainParams.length / 4)];
+        Math.round(Math.random() * this.terrainParams.res / 2 + this.terrainParams.res / 4),
+        Math.round(Math.random() * this.terrainParams.res / 2 + this.terrainParams.res / 4)];
     }
 
     _getDistanceToNearestDot(dot) {
@@ -74,12 +104,25 @@ export default class Trees {
         return Math.floor(distance);
     }
 
+    _alreadyPlaced(dot) {
+        for (var i = 0; i < this.placedDots.length; i++) {
+            if (this.placedDots[i][0] == dot[0] && this.placedDots[i][1] == dot[1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     _generateBestDot() {
         var bestDot, bestDotDistance;
         var samples = 50;
         for (var i = 0; i < samples; i++) {
-            var candidateDot = this._generateRandomPosition(),
-                distance;
+            var distance;
+            var candidateDot = this._generateRandomPosition();
+            while (this._alreadyPlaced(candidateDot)) {
+                candidateDot = this._generateRandomPosition();
+            }
+
             if (!this.placedDots.length) return candidateDot;
             distance = this._getDistanceToNearestDot(candidateDot);
             if (!bestDot || distance > bestDotDistance) {

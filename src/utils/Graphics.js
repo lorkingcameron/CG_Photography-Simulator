@@ -15,9 +15,9 @@ export default class Graphics {
         this._initPostProcessing();
         this._addGUI();
 
-        this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
-        this.renderer.setClearColor(this.scene.fog.color);
-        this.scene.background = this.scene.fog.color;
+        // this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
+        // this.renderer.setClearColor(this.scene.fog.color);
+        // this.scene.background = this.scene.fog.color;
 
         this.cameraLock = false;
         this.activeCamera;
@@ -36,6 +36,10 @@ export default class Graphics {
         this.activeCamera.aspect = window.innerWidth / window.innerHeight;
         this.activeCamera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        if (window.uniforms.u_resolution !== undefined){
+            window.uniforms.u_resolution.value.x = window.innerWidth;
+            window.uniforms.u_resolution.value.y = window.innerHeight;
+          }
     }
 
     _buildScene() {
@@ -75,7 +79,8 @@ export default class Graphics {
     
         const target = document.getElementById('target');
         target.appendChild(this.renderer.domElement);
-        this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+        // this.controls = new PointerLockControls(this.activeCamera,this.renderer.domElement);
+        this.controls - new OrbitControls(this.activeCamera, this.renderer.domElement);
         
         
     }
@@ -180,11 +185,14 @@ export default class Graphics {
         this.renderer.render(this.scene, this.camera);
         
         this.postprocessing.composer.render(0.1);
-        if (this.cameraLock === true){
-            this.controls.lock()
-        } else if (this.cameraLock===false){
-            this.controls.unlock();
-        }
+        // if (this.cameraLock === true){
+        //     this.controls.lock()
+        // } else if (this.cameraLock===false){
+        //     this.controls.unlock();
+        // }
+
+        // update time uniform
+        window.uniforms.u_time.value = window.clock.getElapsedTime();
 
     }
 }

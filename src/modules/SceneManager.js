@@ -118,7 +118,7 @@ export default class SceneManager {
             });
 
             this.characterControls = new CharacterControls(this.graphics.scene, this.physics.world, this.physics.physicsBodies,
-                model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, this.graphics.viewfinderCamera, 'Idle');
+                model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, this.graphics.viewfinderCamera, 'Idle', this.terrain);
         });
     }
 

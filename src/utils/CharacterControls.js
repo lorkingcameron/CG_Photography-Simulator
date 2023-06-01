@@ -3,10 +3,11 @@ import * as CANNON from 'cannon-es'
 
 export class CharacterControls {
     
-    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, viewfinderCamera, currentAction) {
+    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, viewfinderCamera, currentAction, terrain) {
         this.scene = scene;
         this.world = world;
         this.physicsBodies = physicsBodies;
+        this.terrain = terrain;
 
         this.DIRECTIONS = ['w', 'a', 's', 'd']; // should be constant instead of a property
         this.model = model;
@@ -39,7 +40,8 @@ export class CharacterControls {
         this.viewfinderCamera.position.set(0,1,0);
 
         this._bindCharacter();
-        this.hitbox.position.set(0,25,0); // CHARACTER STARTING POSITION
+        var height = this.terrain.data[this.terrain.res / 2][this.terrain.res / 2];
+        this.hitbox.position.set(0,height + 1,0); // CHARACTER STARTING POSITION
         this._updateCamera();
         console.log("Setup Complete");
     }

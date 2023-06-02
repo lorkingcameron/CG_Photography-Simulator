@@ -117,7 +117,7 @@ export default class SceneManager {
                 console.log(a.name, mixer.clipAction(a));
             });
 
-            this.characterControls = new CharacterControls(this.graphics.scene, this.physics.world, this.physics.physicsBodies,
+            this.characterControls = new CharacterControls(this.graphics.scene, this.physics,
                 model, mixer, animationsMap, this.graphics.controls, this.graphics.camera, this.graphics.viewfinderCamera, 'Idle', this.terrain);
         });
     }

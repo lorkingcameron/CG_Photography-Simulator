@@ -1,4 +1,5 @@
 import * as CANNON from 'cannon-es'
+import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
 import * as THREE from 'three'
 import TerrainTexture from '../utils/TerrainTexture.js'
 import Trees from './Trees.js'
@@ -78,6 +79,8 @@ export default class Terrain {
         var w = this.width - 1;
         var geo = new THREE.PlaneGeometry(this.width, this.width, this.res - 1, this.res - 1);
         geo.rotateX(Math.PI / 2);
+        geo.computeVertexNormals();
+        console.log(geo);
 
         for (var x = 0; x < this.res; x++)  {
             for (var y = 0; y < this.res; y++)  {
@@ -100,6 +103,9 @@ export default class Terrain {
         mesh.castShadow = true;
     
         this.scene.add(mesh);
+
+        const helper = new VertexNormalsHelper( mesh, 1, 0xff0000 );
+        this.scene.add(helper);
     }
 
     _buildWater() {

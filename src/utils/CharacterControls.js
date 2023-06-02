@@ -3,10 +3,11 @@ import * as CANNON from 'cannon-es'
 
 export class CharacterControls {
     
-    constructor(scene, world, physicsBodies, model, mixer, animationsMap, orbitControl, camera, viewfinderCamera, currentAction, terrain) {
+    constructor(scene, physics, model, mixer, animationsMap, orbitControl, camera, viewfinderCamera, currentAction, terrain) {
         this.scene = scene;
-        this.world = world;
-        this.physicsBodies = physicsBodies;
+        this.world = physics.world;
+        this.physicsBodies = physics.physicsBodies;
+        this.materials = physics.materials;
         this.terrain = terrain;
 
         this.DIRECTIONS = ['w', 'a', 's', 'd']; // should be constant instead of a property
@@ -40,7 +41,7 @@ export class CharacterControls {
         this.viewfinderCamera.position.set(0,1.8,-0.4);
 
         this._bindCharacter();
-        var height = this.terrain.data[this.terrain.res / 2][this.terrain.res / 2];
+        var height = this.terrain.data[this.terrain.res / 2][this.terrain.res / 2] + 10;
         this.hitbox.position.set(0,height + 1,0); // CHARACTER STARTING POSITION
         this._updateCamera();
         console.log("Setup Complete");
@@ -48,8 +49,6 @@ export class CharacterControls {
 
 
     update(delta, keysPressed, mouseDown) {
-        // console.log(this.hitbox.position);
-        
         // Get current command
         const directionPressed = this.DIRECTIONS.some(key => keysPressed[key] == true);
         var play = '';
@@ -100,8 +99,15 @@ export class CharacterControls {
             this.hitbox.velocity.x = this.walkDir.x * velocity;
             this.hitbox.velocity.z = this.walkDir.z * velocity;
 
+
         } else {
-            this.hitbox.sleep();
+            for (var i = 0; i < this.world.contacts.length; i++) {
+                if (this.world.contacts[i].bi.id == this.hitbox.id) {
+                    console.log(this.world.contacts[i]);
+                    this.hitbox.sleep();
+                    break;
+                }
+            }
         }
 
         if (mouseDown) {
@@ -175,10 +181,10 @@ export class CharacterControls {
 
     _bindCharacter() {
         const sphereBody = new CANNON.Body({
-            mass: 500,
+            mass: 1000,
             shape: new CANNON.Sphere(1),
+            material: this.materials.playerMaterial
         });
-        sphereBody.position.set(0, 0, 0);
         this.world.addBody(sphereBody);
         this.hitbox = sphereBody;
     }

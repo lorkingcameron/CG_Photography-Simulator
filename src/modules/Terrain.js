@@ -30,6 +30,7 @@ export default class Terrain {
                 v = (noise.perlin2((x * f) / 100, (y * f) / 100) + 1) / 2;
                 this.data[x][y] = this._createIsland(v, x, y) * a;
                 // this.data[x][y] = v * a;
+                // this.data[x][y] = 1;
             }
         }
         console.log(this.data)
@@ -67,6 +68,7 @@ export default class Terrain {
         var texture = new THREE.CanvasTexture(terrainTexture.canvas);
         var mat = new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 0.0, map: texture });
         mat.flatShading = true;
+        mat.side = 1;
         // mat.color = new THREE.Color(0x1c5917);
         // mat.wireframe = true;
         return mat;
@@ -75,13 +77,13 @@ export default class Terrain {
     _buildGeometry() {
         var w = this.width - 1;
         var geo = new THREE.PlaneGeometry(this.width, this.width, this.res - 1, this.res - 1);
-        geo.rotateX(- Math.PI / 2);
+        geo.rotateX(Math.PI / 2);
 
         for (var x = 0; x < this.res; x++)  {
             for (var y = 0; y < this.res; y++)  {
             var ind = (x + this.res * y) * 3 + 1;
 
-            geo.attributes.position.array[ind] = this.data[x][this.res - y - 1];
+            geo.attributes.position.array[ind] = this.data[x][y];
             }
         }
 

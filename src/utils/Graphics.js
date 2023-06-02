@@ -45,7 +45,7 @@ export default class Graphics {
         this.viewfinderCamera;
         this.controls;
 
-        this._buildSaveLink();
+        this._buildUI();
     }
     
     onWindowResize() {
@@ -255,7 +255,7 @@ export default class Graphics {
         }
     }
 
-    _buildSaveLink() {
+    _buildUI() {
         this.saveLink = document.createElement('div');
         this.saveLink.style.position = 'absolute';
         this.saveLink.style.bottom = '30px';
@@ -281,6 +281,17 @@ export default class Graphics {
         elements.forEach((e) => {
             e.style.display = "none";
         })
+
+        this.controlsUI = document.createElement('div');
+        this.controlsUI.style.position = 'absolute';
+        this.controlsUI.style.bottom = '30px';
+
+        // TODO: Controls UI
+        this.controlsUI.innerHTML = `
+            
+            `;
+        document.body.appendChild(this.controlsUI);
+        
     }
 
     render() {

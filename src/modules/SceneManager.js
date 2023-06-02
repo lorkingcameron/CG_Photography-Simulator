@@ -103,7 +103,6 @@ export default class SceneManager {
     _createCharacter() {
         new GLTFLoader().load("../../models/Soldier.glb", (gltf) => {
             var model = gltf.scene;
-            console.log(model);
             model.traverse(function(object) {
                 if (object.isMesh) object.castShadow = true;
             });
@@ -114,7 +113,6 @@ export default class SceneManager {
             const animationsMap = new Map();
             gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
                 animationsMap.set(a.name, mixer.clipAction(a));
-                console.log(a.name, mixer.clipAction(a));
             });
 
             this.characterControls = new CharacterControls(this.graphics.scene, this.physics,

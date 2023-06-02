@@ -34,7 +34,6 @@ export default class Terrain {
                 // this.data[x][y] = 1;
             }
         }
-        console.log(this.data)
     }
 
     // Function to reduce value (height) further from center to create an island
@@ -79,8 +78,6 @@ export default class Terrain {
         var w = this.width - 1;
         var geo = new THREE.PlaneGeometry(this.width, this.width, this.res - 1, this.res - 1);
         geo.rotateX(Math.PI / 2);
-        geo.computeVertexNormals();
-        console.log(geo);
 
         for (var x = 0; x < this.res; x++)  {
             for (var y = 0; y < this.res; y++)  {

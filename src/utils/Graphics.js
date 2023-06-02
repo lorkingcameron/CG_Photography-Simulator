@@ -186,7 +186,7 @@ export default class Graphics {
         if (this.activeCamera === this.camera){
             var elements = document.querySelectorAll('[id="saveLink"]');
             elements.forEach((e) => {
-                e.style.display = "initial";
+                e.style.display = "flex";
             })
             this.activeCamera = this.viewfinderCamera;
            
@@ -261,8 +261,21 @@ export default class Graphics {
         this.saveLink.style.bottom = '30px';
         this.saveLink.style.width = '100%';
         this.saveLink.style.textAlign = 'center';
-        this.saveLink.innerHTML = '<a href="#" id="saveLink">Take Photo</a>';
+        this.saveLink.innerHTML = '<a href="#" id="saveLink" class="take-photo"><i class="fas fa-camera"></i></a>';
         document.body.appendChild(this.saveLink);
+
+        this.cameraUI = document.createElement('div');
+        this.cameraUI.style.position = 'absolute';
+        this.cameraUI.style.top = '59px';
+        this.cameraUI.innerHTML = `
+            <div id="saveLink" class="camera-corner"></div>
+            <div id="saveLink" class="camera-corner"></div>
+            <div id="saveLink" class="camera-corner"></div>
+            <div id="saveLink" class="camera-corner"></div>
+            <div id="saveLink" class="camera-cross"></div>
+            `;
+        document.body.appendChild(this.cameraUI);
+
         document.getElementById("saveLink").addEventListener('click', () => {this._saveAsImage()});
         var elements = document.querySelectorAll('[id="saveLink"]');
         elements.forEach((e) => {

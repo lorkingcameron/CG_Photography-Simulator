@@ -33,8 +33,6 @@ export default class SceneManager {
         this.cameraGroup = new THREE.Group();
 
 
-        this.cameraLock;
-
         this.filterMesh;
 
         this.filterMaterial;
@@ -187,43 +185,12 @@ export default class SceneManager {
                 this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ].value-=0.0001;
                 console.log(this.graphics.postprocessing.bokeh.uniforms[ 'maxblur' ]);
             }
-            // if  (name === "w"){
-            //     console.log("W");
-            //     this.cameraGroup.position.x+=1;
-            // }
-            // if  (name === "s"){
-            //     console.log("S");
-            //     this.cameraGroup.position.x-=1;
-            // }
-            // if  (name === "a"){
-            //     console.log("A");
-            //     this.cameraGroup.position.z+=1;
-            // }
-            // if  (name === "d"){
-            //     console.log("D");
-            //     this.cameraGroup.position.z-=1;
-            // }
-            if (name === "e"){
-                if (this.graphics.cameraLock === true){
-                    this.graphics.cameraLock = false;
-                } else {
-                    this.graphics.cameraLock = true;
-                }
-                console.log(this.graphics.cameraLock);
-                
-            }
             if (name === "="){
                 console.log("zoom in");
                 this.graphics._zoomCamera();
             }
             if(name === "-"){
                 this.graphics._zoomOutCamera();
-            }
-            if(name === "q"){
-                console.log(this.characterControls.model.position);
-            }
-            if(name === "x"){
-                console.log(this.filterMesh.position);
             }
         });
     }

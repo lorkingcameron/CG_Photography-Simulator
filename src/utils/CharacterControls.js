@@ -10,7 +10,7 @@ export class CharacterControls {
         this.materials = physics.materials;
         this.terrain = terrain;
 
-        this.DIRECTIONS = ['w', 'a', 's', 'd']; // should be constant instead of a property
+        this.DIRECTIONS = ['w', 'a', 's', 'd'];
         this.model = model;
         this.mixer = mixer;
         this.orbitControl = orbitControl;

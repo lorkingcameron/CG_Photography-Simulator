@@ -34,11 +34,9 @@ export default class Graphics {
 
         this.scene.fog = new THREE.Fog( 0xcce0ff, 100, 150 );
         this.renderer.setClearColor(this.scene.fog.color);
-        // this.scene.background = this.scene.fog.color;
 
         this.filterColor;
 
-        this.cameraLock = false;
         this.activeCamera;
 
         this.camera;

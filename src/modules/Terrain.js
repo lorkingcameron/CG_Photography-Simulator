@@ -30,8 +30,6 @@ export default class Terrain {
             for(var y = 0; y < this.res; y++){
                 v = (noise.perlin2((x * f) / 100, (y * f) / 100) + 1) / 2;
                 this.data[x][y] = this._createIsland(v, x, y) * a;
-                // this.data[x][y] = v * a;
-                // this.data[x][y] = 1;
             }
         }
     }
@@ -62,15 +60,12 @@ export default class Terrain {
         physics.world.addBody(groundBody);
     }
 
-    _buildMaterial() {    
-        // this.material = new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 0.0, map: texture });
+    _buildMaterial() {
         var terrainTexture = new TerrainTexture(this.data, this.res);
         var texture = new THREE.CanvasTexture(terrainTexture.canvas);
         var mat = new THREE.MeshStandardMaterial({ roughness: 1.0, metalness: 0.0, map: texture });
         mat.flatShading = true;
         mat.side = 1;
-        // mat.color = new THREE.Color(0x1c5917);
-        // mat.wireframe = true;
         return mat;
     }
     
@@ -93,7 +88,6 @@ export default class Terrain {
     _buildMesh(geo, mat) {
         var mesh = new THREE.Mesh(geo, mat);
         mesh.position.set(0,0,0); // Account for rounding error
-        // mesh.position.set(-0.5, 0, 0.5); // Account for rounding error
 
     
         mesh.receiveShadow = true;
@@ -129,9 +123,7 @@ export default class Terrain {
         let waterMaterial = new THREE.MeshLambertMaterial({
           color: 0x1c82c8, opacity: 0.8
         });
-        // waterMaterial.transparent = true;
         waterMaterial.flatShading = true;
-        // waterMaterial.wireframe = true;
     
         this.water = new THREE.Mesh(waterGeometry, waterMaterial);
     

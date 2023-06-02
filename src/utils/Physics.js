@@ -31,7 +31,6 @@ export default class Physics {
     _buildPhysics() {
         this.physicsBodies = [];
 
-        console.log(CANNON.World);
         var world = new CANNON.World({
             gravity: new CANNON.Vec3(0, -30, 0) // m/s²
         });

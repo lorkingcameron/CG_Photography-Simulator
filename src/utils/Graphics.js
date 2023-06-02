@@ -201,7 +201,6 @@ export default class Graphics {
 
         this._initPostProcessing();
         console.log(this.activeCamera);
-        console.log(this.controls);
     }
 
 

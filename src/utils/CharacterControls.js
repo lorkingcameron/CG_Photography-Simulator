@@ -103,7 +103,6 @@ export class CharacterControls {
         } else {
             for (var i = 0; i < this.world.contacts.length; i++) {
                 if (this.world.contacts[i].bi.id == this.hitbox.id) {
-                    console.log(this.world.contacts[i]);
                     this.hitbox.sleep();
                     break;
                 }
@@ -124,16 +123,22 @@ export class CharacterControls {
         this.camera.position.y = this.model.position.y - this.cameraAngle.y;
         this.camera.position.z = this.model.position.z - this.cameraAngle.z;
 
-        this.viewfinderCamera.position.x = this.model.position.x - this.viewfinderAngle.x;
-        this.viewfinderCamera.position.y = this.model.position.y - this.viewfinderAngle.y;
-        this.viewfinderCamera.position.z = this.model.position.z - this.viewfinderAngle.z;
-
         this.cameraTarget.x = this.model.position.x
-        this.cameraTarget.y = this.model.position.y + 1
+        this.cameraTarget.y = this.model.position.y + 2
         this.cameraTarget.z = this.model.position.z
         this.orbitControl.target = this.cameraTarget
 
+        this.viewfinderCamera.position.x = this.model.position.x;
+        this.viewfinderCamera.position.y = this.model.position.y + 2;
+        this.viewfinderCamera.position.z = this.model.position.z;
 
+        var newVec = new THREE.Vector3(this.model.position.x - this.camera.position.x, (this.model.position.y + 2) - this.camera.position.y, this.model.position.z - this.camera.position.z);
+        var vecDiv = Math.sqrt(Math.pow(newVec.x, 2) + Math.pow(newVec.y, 2) + Math.pow(newVec.z, 2));
+        var unitVec = new THREE.Vector3(newVec.x / vecDiv, newVec.y / vecDiv, newVec.z / vecDiv);
+        var vecSameDir = new THREE.Vector3(2 * unitVec.x, 2 * unitVec.y, 2 * unitVec.z);
+        var thirdPoint = new THREE.Vector3(this.model.position.x + vecSameDir.x, this.model.position.y + 2 + vecSameDir.y, this.model.position.z + vecSameDir.z);
+
+        this.viewfinderCamera.lookAt(thirdPoint.x, thirdPoint.y, thirdPoint.z);
     }
 
     _updateCamera() {

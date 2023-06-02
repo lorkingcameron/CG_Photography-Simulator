@@ -35,7 +35,6 @@ export default class Rocks {
         }
 
         this.gltfLoader.load("../../models/low_poly_rocks.glb", (file)=>{
-            this.findType(file.scene, 'Mesh');
             const dummy = new THREE.Object3D();
             var geometry = file.scene.getObjectByName('defaultMaterial').geometry;
             var material = file.scene.getObjectByName('defaultMaterial').material;

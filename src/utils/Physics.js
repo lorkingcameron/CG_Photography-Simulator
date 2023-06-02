@@ -6,12 +6,12 @@ export default class Physics {
     constructor (scene) {
         this._buildPhysics();
         this._buildContactMaterials();
-        // this._buildDebugger(scene);
+        this._buildDebugger(scene);
     }
 
     updatePhysics(){
         this.world.fixedStep();
-        // this.CannonDebugger.update();
+        this.CannonDebugger.update();
 
         for (var i = 0; i < this.physicsBodies.length; i++) {
             let body = this.physicsBodies[i][0];
@@ -40,10 +40,10 @@ export default class Physics {
 
     _buildContactMaterials() {
         this.materials = {
-            groundMat: new CANNON.Material("groundMat")
+            groundMat: new CANNON.Material("groundMat"),
+            treeMat: new CANNON.Material("treeMat"),
+            playerMat: new CANNON.Material("playerMat")
         }
-
-        this.materials.treeMat = new CANNON.Material("treeMat");
 
         var treeGroundCM = new CANNON.ContactMaterial(
             this.materials.treeMat,
@@ -54,5 +54,15 @@ export default class Physics {
             }
         )
         this.world.addContactMaterial(treeGroundCM);
+
+        var playerGroundCM = new CANNON.ContactMaterial(
+            this.materials.playerMat,
+            this.materials.groundMat,
+            {
+                friction: 1e10,
+                restitution: 0
+            }
+        )
+        this.world.addContactMaterial(playerGroundCM);
     }
 }

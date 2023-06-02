@@ -15,6 +15,7 @@
         "vite": "^4.2.0"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.4.0",
         "@nodetoy/three-nodetoy": "^0.1.36",
         "cannon-es": "^0.20.0",
         "cannon-es-debugger": "^1.0.0",

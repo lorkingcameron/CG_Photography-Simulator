@@ -74,7 +74,7 @@ export default class SceneManager {
     }
 
     _createFilter(){
-        this.filterGeometry = new THREE.SphereGeometry(5, 32, 16); 
+        this.filterGeometry = new THREE.SphereGeometry(0.2, 32, 16); 
         this.filterMaterial = new THREE.MeshBasicMaterial(
             {
                 color: new THREE.Color("#FFCB8E"),
@@ -230,7 +230,8 @@ export default class SceneManager {
 
     _updateFilter(){
         if(this.filterMesh != null){
-           this.filterMesh.position.copy(this.characterControls.hitbox.position);
+           this.filterMesh.position.copy(this.characterControls.model.position);
+           this.filterMesh.position.y += 2;
         }
         if(this.filterMaterial != null){
             this.filterMaterial.color = this.graphics.filterColor;
